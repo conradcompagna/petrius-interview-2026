@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>PetrIUS · Annotation desk</title><link rel="icon" href="data:,"><link rel="stylesheet" href="style.css"><script src="app.js" defer></script></head>
+<body>
+<header>
+  <a class="brand" href="./" aria-label="Annotation desk home"><span class="monogram">P</span><span><strong>PetrIUS</strong><small>ANNOTATION DESK</small></span></a>
+  <nav aria-label="View mode"><button class="active" data-mode="finished">Finished work</button><button data-mode="compare">Compare with annotations</button></nav>
+  <span class="local-badge"><i></i> Local · view only</span>
+</header>
+<main>
+  <aside class="library">
+    <div class="library-head"><span class="eyebrow">COLLECTION</span><select id="dataset" aria-label="Annotation collection"></select><p id="collection-note"></p><details id="experiment-archive"><summary>Earlier experiments</summary><select id="experiment" aria-label="Earlier experiment"><option value="">Choose an experiment…</option></select></details></div>
+    <div class="search-box"><input id="search" type="search" placeholder="Find a book or scan…" aria-label="Search books or scans"><select id="book" aria-label="Filter by book"><option value="">All books</option></select></div>
+    <div class="list-heading"><span id="page-count">Loading collection…</span><button id="clear-filters" class="text-button" title="Clear search and book filter">Reset</button></div>
+    <div id="page-list" class="page-list" aria-label="Pages"></div>
+    <div class="library-foot">Source images, annotations and model outputs.<br>Choose a page, then click an overlay to inspect it.<br><a id="source-credits" href="SOURCES.html" target="_blank" rel="noopener" hidden>Image sources and credits</a></div>
+  </aside>
+  <section class="workspace" aria-label="Document viewer">
+    <div class="page-heading"><div><span class="eyebrow" id="page-subtitle">SOURCE & ANNOTATIONS</span><h1 id="page-title">Choose a page</h1></div><div class="paging"><button id="prev" title="Previous page (←)" aria-label="Previous page">←</button><span id="position">—</span><button id="next" title="Next page (→)" aria-label="Next page">→</button></div></div>
+    <div class="toolbar">
+      <label id="page-view-control" hidden>View <select id="page-view" aria-label="Page view"><option value="single">Single page</option><option value="split">Split view</option></select></label>
+      <label id="output-control">Output <select id="output" aria-label="Annotation output" disabled><option>Loading outputs…</option></select></label>
+      <div class="layer-controls" aria-label="Overlay layers">
+        <label><input type="checkbox" id="layer-region" checked>Regions</label>
+        <label><input type="checkbox" id="layer-row" checked>Rows</label>
+        <label><input type="checkbox" id="layer-span" checked>Spans</label>
+        <label><input type="checkbox" id="layer-object" checked>Objects</label>
+        <details class="more-layers"><summary>More</summary><div><label><input type="checkbox" id="layer-draft">Draft rows</label><label><input type="checkbox" id="baselines">Baselines</label><label><input type="checkbox" id="order">Reading order</label></div></details>
+      </div>
+      <div class="view-controls"><label class="opacity">Fill <input id="opacity" type="range" min="0" max="50" value="12" aria-label="Overlay fill opacity"></label><button id="overlays" title="Toggle overlays (O)">Hide overlays</button><button id="mistakes" title="Outline in red the lines whose label differs from the reference (M)" hidden>Mistakes</button><button id="expand" title="Give the scan the full window width">Expand</button><button id="fit" title="Fit page (F)">Fit</button><button id="zoom-out" aria-label="Zoom out">−</button><span id="zoom-value">100%</span><button id="zoom-in" aria-label="Zoom in">+</button></div>
+    </div>
+    <div id="legend" class="legend" aria-label="Filter overlays by label"></div>
+    <div id="panes" class="panes">
+      <section class="pane" id="pane-a"><div class="pane-head"><div><span id="name-a">Training labels</span><small id="status-a"></small></div><select id="reference" aria-label="Comparison reference"><option value="auto">Reference: automatic</option></select><a id="text-a" class="text-button" target="_blank" rel="noopener" hidden>Read text ↗</a><a id="json-a" class="text-button" target="_blank" rel="noopener">JSON ↗</a></div><div class="viewport" id="view-a"><div class="empty">Select a scan from the collection.</div></div></section>
+      <section class="pane" id="pane-b" hidden><div class="pane-head"><div><span id="name-b">Model predictions</span><small id="status-b"></small></div><a id="text-b" class="text-button" target="_blank" rel="noopener" hidden>Read text ↗</a><a id="json-b" class="text-button" target="_blank" rel="noopener">JSON ↗</a></div><div class="viewport" id="view-b"></div></section>
+    </div>
+    <div class="viewer-foot"><span id="page-message">Scroll to zoom · drag to pan · click a boundary to inspect</span><label id="sync-control"><input type="checkbox" id="sync" checked>Sync views</label></div>
+  </section>
+  <aside class="inspector">
+    <div class="inspector-head"><span class="eyebrow">INSPECT</span><h2 id="inspect-title">The page, up close</h2><p id="inspect-hint">Click a row, span or region to see its label, text and source.</p></div>
+    <div id="selection-detail" class="selection-detail"></div>
+    <div class="object-heading"><span id="objects-title">Annotations</span><span id="object-count"></span></div>
+    <input id="object-search" type="search" placeholder="Find label, text or ID…" aria-label="Search annotations on page">
+    <div id="object-list" class="object-list"></div>
+  </aside>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+</body></html>

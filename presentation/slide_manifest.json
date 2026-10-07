@@ -1,0 +1,122 @@
+[
+  {
+    "slide": 1,
+    "task": "Task I",
+    "title": "The two-page task: 131 / 131 correct",
+    "seconds": 60,
+    "body": "My starting point is the assignment itself: these two pages of the Roman Decretals. The submitted minimal program retrieves both images and both hOCR files directly from MDZ, finds the central text blocks, assigns the four requested roles, and produces these colour overlays together with the evaluation. It scores 131 out of 131 against the reference, and I personally inspected both page overlays. The colours separate legal text, summaria, inscriptiones and other material. The surrounding gloss remains outside the selected blocks. The implementation needs only OpenCV and NumPy. I have included this small program because the committee should be able to run and inspect the actual task solution immediately.",
+    "source": "task1_min/task1.py; task1_min/reference.csv; task1_min/labels_00040.jpg; task1_min/labels_00041.jpg"
+  },
+  {
+    "slide": 2,
+    "task": "Task I",
+    "title": "A small rule system is sufficient for this edition",
+    "seconds": 60,
+    "body": "There are three measurements: red ink, slant, and letter height relative to the page's usual type. Large black lines establish the central blocks. The program extends each block upwards and downwards to include its chapter heads, and rejects lines extending into the gloss. Red material becomes other; slanted type becomes summarium; large type becomes text; the remaining small type becomes inscriptio. It uses the library's word and line geometry, splitting the five OCR lines that cross the gutter. The matrix contains sixty text labels, sixteen summaria, seven inscriptiones, six other labels, and forty-two outside controls. All are correct. The completed program also labels six gutter numbers and the woodcut initial, and rejects two junk OCR fragments. This solves the specified pages with a compact, inspectable implementation.",
+    "source": "task1_min/task1.py; task1_min/reference.csv; minimal confusion matrix verified in source"
+  },
+  {
+    "slide": 3,
+    "task": "Task I",
+    "title": "Across editions, use learned page and line models",
+    "seconds": 60,
+    "body": "The cross-edition solution is a neural pipeline. Fixed rules depend on the relationship between text size, gloss size, spacing and position in one edition. Those relationships change between printers and typefaces. I therefore trained D-FINE to find the regions, constrained PERO to find and recognise lines within those regions, and trained a neural model to select the central blocks and assign line roles. The line model combines colour image strips, OCR characters, coordinates and the other lines on the page. The two training collections each contain one hundred training pages and twenty evaluation pages. This image shows the combined pipeline on an original interview page. The package contains its model weights, inference code and a viewer for inspecting the results.",
+    "source": "out/dfine_region_training_v1/data_manifest.json; out/central_block_annotations_v1/manifest.json; line_nn_v3/model.py; out/line_nn_v3/task_predictions/bsb10144443/00040.json"
+  },
+  {
+    "slide": 4,
+    "task": "Task I",
+    "title": "The trained systems have measurable results",
+    "seconds": 60,
+    "body": "These results identify what each stage accomplishes and what to improve next. The region detector reaches an F1 score of 0.862 at fifty percent overlap on twenty pages from twenty books outside its training books. That represents 206 matched regions, thirty-two extra detections and thirty-four missed regions. The neural role model reaches macro-F1 of 0.945 on its twenty evaluation pages. Its text and summarium F1 scores are approximately ninety-nine percent; inscriptio and other are approximately ninety percent. There are fourteen label errors among 5,065 supplied lines. The practical next steps are clear: improve small source labels, chapter apparatus and region boundaries, then extend the labelled examples to Gothic and mixed-script material.",
+    "source": "D-FINE epoch14/step1400 in out/dfine_region_training_v1/full/epoch_metrics.jsonl; line_nn_v3/work/result_train_full.json; line_nn_v3/work/train_full.log"
+  },
+  {
+    "slide": 5,
+    "task": "Task I",
+    "title": "Six days: a complete experimental environment",
+    "seconds": 60,
+    "body": "I used LLM agents extensively, and that is central to how this work was done. In six days I developed an acquisition layer for a hundred volumes, more than twenty-six thousand source lines across more than two hundred files, a review viewer, labelled training collections, a trained region detector and three generations of neural classifiers. Multiple candidate systems were tested and rejected. Claude and Codex implemented code, ran experiments and investigated failures under my direction. ChatGPT generated the training annotations, which I reviewed. I set the questions, judged the results and personally check the submission. This is a modern research workflow: it gives one researcher the implementation capacity and experimental breadth that previously demanded a much larger effort.",
+    "source": "FINDINGS.md section12; out/webgpt_ocr_fullpage100_20261006/timeline_evidence.json; project source inventory; NOTE.md tools statement"
+  },
+  {
+    "slide": 6,
+    "task": "Task III",
+    "title": "The same divisio; a different attribution",
+    "seconds": 60,
+    "body": "The supplied example makes the historical objective concrete. These are crops of the complete divisio in the left column of each image. In 1490 the text names Jacobus de Arena and ends with Bartolus. In 1627 it retains only Bartolus. We need a system that retrieves these two units, recognises them as versions of the same paratext, and records the loss of an attribution. The abbreviation Bar and the abbreviation B should resolve to the same person. Jac de arena must remain a separate attribution that can disappear. This is why a single fuzzy text similarity score is insufficient. The workflow must distinguish variation in written form from changes in the information communicated by the paratext.",
+    "source": "PetrIUS Interview Tasks for the Postdoc 4 Position.docx, Task III; D. 1.1.1. 1490.jpg; D. 1.1.1. 1627.jpg"
+  },
+  {
+    "slide": 7,
+    "task": "Task III",
+    "title": "Retrieve the legal locus, then recover its paratext",
+    "seconds": 60,
+    "body": "I begin with an edition-independent legal identifier, here D.1.1.1pr. I retrieve the corresponding passage using the OCR, book and title headings, incipits, and RapidFuzz for character-level fuzzy matching. This gives a local search area even when spelling and abbreviations differ. Within that area, the page model identifies the text streams. A unit classifier uses the lemma, position and neighbouring material to attach the divisio to the fragment. It assembles a complete unit across lines and, where needed, across page breaks. Each result receives a stable key combining edition, legal locus, paratext type and occurrence. The record retains the original image coordinates and raw OCR, so every later comparison can be checked against the actual witness.",
+    "source": "Proposed workflow for Task III; RapidFuzz official documentation: https://rapidfuzz.github.io/RapidFuzz/Usage/fuzz.html ; existing implementation components: region_dataset/, line_nn_v3/, annotation_viewer/"
+  },
+  {
+    "slide": 8,
+    "task": "Task III",
+    "title": "Compare wording and historical content separately",
+    "seconds": 60,
+    "body": "I keep a diplomatic layer and derive two representations from it. The matching layer handles spelling variation, long s, u and v, and alternative abbreviation expansions. Character n-grams retrieve candidates; CollateX then exposes correspondences in a multiple-witness alignment. The content layer records named authorities, citations, negation, conditions and exceptions. A controlled authority list resolves Bar and B to Bartolus, while retaining the printed forms and locations. Candidate units are grouped through aligned similarity and shared legal locus, then checked for conflicting content fields before they become a variant group. Crucially, normalisation never deletes an author or a qualification. A name disappearing is therefore an event to inspect, rather than noise that a high similarity score silently removes.",
+    "source": "Proposed Task III workflow; CollateX official documentation: https://collatex.net/doc/ ; source example from the interview task document and supplied images"
+  },
+  {
+    "slide": 9,
+    "task": "Task III",
+    "title": "Make the change an explicit, inspectable record",
+    "seconds": 60,
+    "body": "This is the structured result I want. The 1490 authority set contains Jacobus de Arena and Bartolus; the 1627 set contains Bartolus. Alignment links the shared division of the passage, so the remaining difference becomes an attribution-removal event with an edition, a locus and a paratext type. The record stores both excerpts, the exact source spans and the reason for the flag. The same mechanism can flag a lost exception, a changed negation or an added legal reference. It does not equate every textual difference with a doctrinal difference. Historians assign the interpretation in the review interface. The computer's contribution is systematic detection and comparison of these events across thousands of corresponding units.",
+    "source": "Proposed output schema; the named-author difference is specified in Task III and visible in both source images"
+  },
+  {
+    "slide": 10,
+    "task": "Task III",
+    "title": "Return evidence to historians—and patterns to research",
+    "seconds": 60,
+    "body": "Historians see the two images, aligned diplomatic text, the resolved names and the proposed event side by side. They can confirm, correct and export a citable evidence record. The main risk is precise: a name missed by OCR can masquerade as a historical deletion. A missing-name flag therefore triggers inspection of the complete source unit, with targeted re-recognition or transcription of the disputed span. The unit boundary is checked too, because an attribution may sit on another line. Once events are confirmed, the analysis asks where, when and in which editorial families attribution disappears. That produces a corpus-wide history of editorial selection, while allowing every aggregate pattern to be traced back to its printed evidence.",
+    "source": "Task III requirements; proposed comparison interface, building on annotation_viewer/; no implemented variant-detection result is claimed"
+  },
+  {
+    "slide": 11,
+    "task": "Task IV",
+    "title": "A 360-page pilot across six editions",
+    "seconds": 60,
+    "body": "I would start with three hundred and sixty complete pages: sixty from each of these six editions. The four Digest witnesses give a sequence from Gothic print in 1490 through Roman editions to 1627, including a witness with Greek notes. The two Decretals editions connect the task's successful Roman example to an earlier Gothic edition. I would select forty matched Digest loci across four witnesses and twenty Decretals loci across two, giving two hundred paratext witness units for direct comparison. The remaining page coverage supplies difficult layouts and continuation cases. The split is two hundred and forty training pages, sixty development pages and sixty sealed test pages. Adjacent pages of one sampled passage stay together in the same split.",
+    "source": "Pilot proposed here; edition metadata in corpus/benchmark_inventory.json: bsb00051759, bsb11396145, bsb10520013, heidelberg_justinian1627bd1, bsb00082927, bsb10144443"
+  },
+  {
+    "slide": 12,
+    "task": "Task IV",
+    "title": "Historians define the units and the distinctions",
+    "seconds": 60,
+    "body": "I need three kinds of historian input. First, page structure: the text streams, their reading order and where they continue. Second, unit identity: the legal locus, the paratext type and the exact boundaries of the unit. Third, text and meaning: difficult abbreviation readings, names, citations and whether a difference changes an attribution, condition or exception. We begin with a twelve-page calibration workshop covering all six editions. I prefill annotations with the existing models; historians correct them in the viewer and discuss disagreements in a short weekly clinic. Their decisions become examples in a living annotation guide. Sixty focal paratext units receive two independent readings and an adjudication, creating a focused reference for the historical event detection.",
+    "source": "Proposed collaboration protocol; existing annotation tools in annotation_viewer/ and region_dataset/"
+  },
+  {
+    "slide": 13,
+    "task": "Task IV",
+    "title": "Six months, with a usable result at each stage",
+    "seconds": 60,
+    "body": "December fixes the corpus, source terms and annotation guide. January produces a checked pilot dataset and a first retrained region and role pipeline. OCR work begins alongside it, concentrating on the Gothic and Greek examples and the fields needed for historical comparison. February and March develop legal-locus alignment and complete paratext assembly, including continuations. By the end of March, a historian can move from a locus to its corresponding units in the pilot editions. April adds variant grouping and attribution-change detection, reviewed in the comparison desk. May runs the sealed evaluation, packages the reproducible release and produces the first matched-locus study. Each stage ends in an inspectable artifact, so progress is measured by usable data and demonstrated operations.",
+    "source": "Proposed schedule for Task IV, start date specified in task document"
+  },
+  {
+    "slide": 14,
+    "task": "Task IV",
+    "title": "Success means recovering the historical evidence",
+    "seconds": 60,
+    "body": "I would measure success at the points where errors affect the research. The pilot targets are region F1 of at least point nine and role macro-F1 of at least point nine five. For OCR, the key test is recovery of the names and citations used in comparisons, with ninety-five percent exact recovery as the target. Legal-locus linking and variant grouping receive their own reference sets. Attribution and qualification events are judged for both precision and recall: we need to know which changes were invented and which were missed. Results are broken down by edition, typeface and class. Finally, I compare timed manual work with assisted correction of comparable units, targeting a reduction of at least half in median correction time.",
+    "source": "Proposed pilot acceptance targets, not current model results; sealed evaluation comprises 60 complete pages and focal comparison units"
+  },
+  {
+    "slide": 15,
+    "task": "Task IV",
+    "title": "Publish a reusable corpus and an answerable question",
+    "seconds": 60,
+    "body": "The release separates code, models, annotations and library images. GitHub carries the implementation, launch scripts, annotation guide and evaluation protocol. A versioned model and dataset release carries weights and the annotations we can distribute. Every item retains its library identifier, source address and terms. Retrieval scripts reproduce image acquisition; image redistribution follows the recorded terms of each holding institution. The first historical output is a matched-locus study of attribution: which names survive, disappear or move between paratextual layers across the pilot editions. Scaling that design reveals patterns that individual reading cannot assemble systematically. The deliverable is therefore both a reusable research instrument and a concrete investigation, with each computational result linked back to the witnesses.",
+    "source": "Task IV publication requirement; source rights metadata in corpus/benchmark_inventory.json; proposed historical study"
+  }
+]
