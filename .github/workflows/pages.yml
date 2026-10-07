@@ -1,0 +1,38 @@
+name: Publish annotation viewer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['site/**', '.github/workflows/pages.yml', 'tools/validate_static_site.py']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Publication starts only after the author makes the repository public.
+    if: github.event.repository.private == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check the static viewer
+        run: python tools/validate_static_site.py site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - name: Publish
+        id: deployment
+        uses: actions/deploy-pages@v4
