@@ -10,13 +10,15 @@ The advance written Task I handoff is **`Task_I_written_submission.zip`** in the
 
 1. **Inspect the results:** double-click `RUN_VIEWER.bat`. The viewer runs with Python's standard library and opens in your browser.
 2. **Reproduce Task I:** double-click `task1_min/run.bat`. It installs OpenCV and NumPy, downloads both page images and their MDZ OCR, and produces the labelled pages and evaluation.
-3. **Run the trained models:** double-click `inference/setup.bat`, then `inference/run.bat`. The default run processes the two interview pages. See [the inference instructions](inference/README.md) for your own images.
+3. **Run the trained models:** double-click `inference/run.bat`. It downloads the selected weights when needed, installs the tested CPU environment and processes the two interview pages. See [the inference instructions](inference/README.md) for your own images.
 4. **Read the two-page note:** [PDF](docs/task1_note.pdf) · [editable Word document](docs/task1_note.docx).
 5. **Present the results:** the `presentation/` directory contains the fifteen-minute slide deck and speaking material for Tasks I, III and IV.
 
-Install **Python 3.12** with the Windows Python launcher. The complete local folder is ready to run. For a downloaded copy, extract the source package, then extract **every `assets-*.zip` into that same folder** so that `models/` and `viewer_data/` sit beside this README. Each archive extracts normally; no archive joining software is needed. GitHub's automatic source ZIP contains the code but not these large image and model assets.
+Install **Python 3.12** with the Windows Python launcher. GitHub's source ZIP includes the complete browser viewer: all 67 collections, 4,093 page records and their annotations. Page images load directly from the libraries. Extract the source ZIP and run `RUN_VIEWER.bat`; no model download is needed to inspect the work.
 
-For a private GitHub clone, sign in with GitHub CLI and double-click `GET_ASSETS.bat`. It downloads the private release assets, verifies their checksums and installs them. Access stays with the repository's authorized users.
+The trained models are in the release's **`assets-models-01.zip`** (490 MB). `inference/run.bat` retrieves them automatically, or run `GET_ASSETS.bat` to install them separately. The downloader verifies the archive and every extracted file. It uses a direct HTTPS download for a public release and authenticated GitHub CLI access while the repository is private. You can also extract the model ZIP into this folder so `models/` sits beside this README.
+
+The author's full offline copy includes six additional `assets-viewer_data-*.zip` archives, retained locally. Extract all six into this folder to use saved library images without an internet connection. Their file inventory and hashes are in [the offline manifest](docs/offline_assets.json); these optional archives are separate from the GitHub release.
 
 ## The task solution
 

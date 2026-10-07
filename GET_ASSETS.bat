@@ -1,4 +1,8 @@
 @echo off
-cd /d "%~dp0"
+setlocal
+pushd "%~dp0"
 py -3 tools/get_assets.py
-if errorlevel 1 pause
+set "asset_status=%errorlevel%"
+popd
+if not "%asset_status%"=="0" pause
+exit /b %asset_status%

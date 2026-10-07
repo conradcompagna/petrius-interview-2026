@@ -1,6 +1,6 @@
 # Run the trained pipeline
 
-The weights are included. Install **Python 3.12**, double-click **setup.bat**, then **run.bat**. The first command installs a CPU runtime. The second downloads the two assigned MDZ pages and runs D-FINE → PERO → neural v3. No API keys or paid services are used.
+Install **Python 3.12** and double-click **run.bat**. It downloads the selected model weights when needed, installs the tested CPU runtime, downloads the two assigned MDZ pages and runs D-FINE → PERO → neural v3. While the repository is private, automatic model downloads use GitHub CLI signed into an account with repository access. After public release, the download works directly over HTTPS. No API keys or paid services are used for inference.
 
 The pipeline writes its results to `outputs/`:
 
