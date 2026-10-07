@@ -9,7 +9,7 @@ import threading
 import webbrowser
 from collections import Counter
 from functools import lru_cache
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler, SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 from urllib.request import urlopen
@@ -835,12 +835,35 @@ def handler_for(catalog):
     return Handler
 
 
+def static_handler():
+    """Serve the checked-in web viewer when the optional offline images are absent."""
+    class StaticHandler(SimpleHTTPRequestHandler):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, directory=str(ROOT / 'site'), **kwargs)
+
+        def do_GET(self):
+            if urlparse(self.path).path == '/api/health':
+                data = json.dumps(dict(app='petrius-annotation-desk', root=str(ROOT))).encode()
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Content-Length', str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+            else:
+                super().do_GET()
+
+        def log_message(self, *args):
+            pass
+    return StaticHandler
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--port', type=int, default=8877)
     ap.add_argument('--open', action='store_true', help='Open in your default browser')
+    ap.add_argument('--static', action='store_true', help='Use the web viewer and library-hosted images')
     args = ap.parse_args()
-    catalog = None
+    request_handler = None
     for port in range(args.port, min(args.port + 20, 65536)):
         url = f'http://127.0.0.1:{port}/'
         # Reuse this copy; another checkout may already occupy the default port.
@@ -856,10 +879,14 @@ def main():
             continue
         except (OSError, ValueError):
             pass
-        if catalog is None:
-            catalog = PortableCatalog() if local('viewer_data/index.json').exists() else Catalog()
+        if request_handler is None:
+            offline = local('viewer_data/index.json').exists()
+            if args.static or (not offline and local('site/data/index.json').exists()):
+                request_handler = static_handler()
+            else:
+                request_handler = handler_for(PortableCatalog() if offline else Catalog())
         try:
-            server = ThreadingHTTPServer(('127.0.0.1', port), handler_for(catalog))
+            server = ThreadingHTTPServer(('127.0.0.1', port), request_handler)
             break
         except OSError as error:
             if error.errno not in (48, 98, 10048):

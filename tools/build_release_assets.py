@@ -1,4 +1,4 @@
-"""Pack large models and viewer assets into independently extractable release ZIPs."""
+"""Pack release models and optional local offline data into separate ZIP manifests."""
 from pathlib import Path
 import argparse, hashlib, json, zipfile
 
@@ -15,10 +15,10 @@ def main():
     ap.add_argument('--max-bytes',type=int,default=750_000_000)
     ap.add_argument('--directories',nargs='+',choices=['models','viewer_data'],default=['models','viewer_data'])
     a=ap.parse_args();a.out.mkdir(parents=True,exist_ok=True)
-    manifest_path=ROOT/'docs/release_assets.json'
-    prior=json.loads(manifest_path.read_text(encoding='utf-8')) if manifest_path.exists() else {'assets':[]}
-    assets=[entry for entry in prior['assets'] if not any(entry['name'].startswith('assets-'+d+'-') for d in a.directories)]
     for directory in a.directories:
+        is_offline=directory=='viewer_data'
+        manifest_path=ROOT/('docs/offline_assets.json' if is_offline else 'docs/release_assets.json')
+        assets=[]
         files=sorted(p for p in (ROOT/directory).rglob('*') if p.is_file())
         if not files:raise SystemExit('No files under '+directory)
         chunks=[];chunk=[];size=0
@@ -45,9 +45,16 @@ def main():
                         raise RuntimeError('Member hash mismatch '+record['path'])
             assets.append({'name':dest.name,'bytes':dest.stat().st_size,'sha256':digest(dest),'files':records})
             print(f'{dest.name}: {dest.stat().st_size:,} bytes / {len(records)} files',flush=True)
-    manifest={'repository':'conradcompagna/petrius-interview-2026','release':'interview-2026-10-07','assets':assets}
-    manifest_path.write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
-    (a.out/'SHA256SUMS.txt').write_text(''.join(f"{v['sha256']}  {v['name']}\n" for v in assets),encoding='ascii')
+        manifest={'repository':'conradcompagna/petrius-interview-2026','release':'interview-2026-10-07',
+                  'distribution':'local_optional_offline' if is_offline else 'github_release','assets':assets}
+        manifest_path.write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
+        sums=a.out/('OFFLINE_SHA256SUMS.txt' if is_offline else 'SHA256SUMS.txt')
+        extra=[]
+        if not is_offline and sums.exists():
+            extra=[row for row in sums.read_text(encoding='ascii').splitlines()
+                   if row.endswith('  Task_I_written_submission.zip')]
+        sums.write_text(''.join(f"{v['sha256']}  {v['name']}\n" for v in assets)
+                        +''.join(row+'\n' for row in extra),encoding='ascii')
     print('Every archive passed CRC and every extracted member matched its source hash.',flush=True)
 
 if __name__=='__main__':main()

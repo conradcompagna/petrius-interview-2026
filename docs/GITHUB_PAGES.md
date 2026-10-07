@@ -14,6 +14,6 @@ The resulting address will be **https://conradcompagna.github.io/petrius-intervi
 
 To preview the same site locally, run `python -m http.server 8880 --directory site` from the package directory and open `http://localhost:8880/`. Open it through HTTP so the browser can load the saved data files.
 
-Page annotations are compressed individually and decompressed in the browser. Images are linked to their library sources. Each overlay retains the original page coordinate system. The complete downloadable submission also includes local image copies for offline viewing.
+Page annotations are compressed individually and decompressed in the browser. Images are linked to their library sources. Each overlay retains the original page coordinate system. The author's separate offline archive contains saved image copies; it is retained locally.
 
 GitHub Free supports Pages from public repositories; GitHub limits a published site to 1 GB. The supplied workflow checks every local page reference and the total site size before publishing. See [GitHub Pages availability](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages), [size limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits) and [the official workflow documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
