@@ -34,7 +34,7 @@ def validate(root):
             count += 1
     expected = {'finished-task1-min': 2, 'finished-interview': 2,
                 'finished-region-data': 120, 'finished-neural-data': 120,
-                'finished-region-eval': 20, 'finished-neural-eval': 20}
+                'finished-region-eval': 20, 'finished-neural-eval': 20, 'mdz-ocr-worst100': 100}
     assert finished == expected, finished
     for required in ['index.html', 'app.js', 'style.css', 'SOURCES.html']:
         local(required)
