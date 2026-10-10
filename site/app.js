@@ -32,20 +32,18 @@ function displayNote(value) {
   if(typeof value!=="string")return "";
   return value.split(/(?<=[.!?])\s+|\s*·\s*/).filter(s=>!/(?:AI.reviewed|\bsilver\b|human.gold|independent human|LLM annotations|model.drafted|not calibrated|not measured accuracy)/i.test(s)).join(" · ");
 }
-function collectionNote() {const d=dataset();$("collection-note").textContent=d.group==="finished"?d.description:`Earlier experiment · ${d.pages.length} saved pages`;}
-function allowedDatasets() { const archive=state.mode==="archive"||(state.mode==="compare"&&dataset()?.group!=="finished");return state.index.datasets.filter(d => archive ? d.group !== "finished" : d.group === "finished"); }
+function collectionNote() {}
+function allowedDatasets() { return state.index.datasets.filter(d => d.pages.length); }
 function outputName(d) { return d.id==="ocr-test100"?"Kraken · original OCR":d.name; }
 function visibleObject(o) { return state.overlays && $("layer-" + o.kind)?.checked && (!state.role || o.label === state.role); }
 function saveURL() { history.replaceState(null, "", "#" + new URLSearchParams({mode:state.mode, dataset:state.dataset, page:state.key, reference:state.ref, view:state.pageView})); }
-function isComparison() { return state.mode === "compare"; }
+function isComparison() { return false; }
 function isSplitView() { return isComparison() && state.pageView === "split"; }
 function updatePageView() {
   const comparison=isComparison(),split=isSplitView();
   document.body.classList.toggle("compare",split);
   document.body.classList.toggle("segmentation-view",state.mode==="segmentation");
-  $("pane-a").hidden=comparison&&!split;$("pane-b").hidden=!comparison;
-  $("page-view-control").hidden=!comparison;$("page-view").value=state.pageView;
-  if($("pane-"+state.active).hidden)state.active=comparison?"b":"a";
+  state.active="a";
 }
 function setPageView(value) {
   state.pageView=value==="single"?"single":"split";
@@ -157,7 +155,6 @@ function activate(id) {
   if(!panes[id].page)return;
   state.active=id;
   for(const [key,p] of Object.entries(panes))$("pane-"+key).classList.toggle("active-pane",key===id);
-  $("objects-title").textContent=state.mode==="compare"?(id==="a"?"Reference annotations":"Model annotations"):"Annotations";
   $("zoom-value").textContent=panes[id].box?Math.round(panes[id].page.image.width/panes[id].box[2]*100)+"%":"100%";
   renderObjectList();
 }
@@ -177,29 +174,15 @@ function updateMistakes() {
   const objs=Object.values(panes).flatMap(p=>p.page?.objects||[]),flagged=objs.filter(o=>o.mistake!==null&&o.mistake!==undefined),n=flagged.filter(o=>o.mistake).length,nr=flagged.filter(o=>o.mistake&&o.kind==="region").length,b=$("mistakes");
   if(!b)return;b.hidden=!flagged.length;b.textContent=(state.mistakes===false?"Show mistakes":"Hide mistakes")+" ("+(n-nr)+" lines, "+nr+" regions)";b.style.color=n?"#e01b24":"";
 }
-function renderObjectList() {
-  const p=panes[state.active],q=$("object-search").value.trim().toLowerCase();
-  const objects=(p?.page?.objects||[]).filter(o=>visibleObject(o)&&(!q||`${o.label} ${o.text} ${o.source_id} ${o.kind}`.toLowerCase().includes(q)));
-  $("object-count").textContent=objects.length;$("object-list").replaceChildren();
-  if(!objects.length)$("object-list").append(text("div",state.overlays?"No matching annotations. Try another layer or clear the label filter.":"Overlays are hidden. Show them to browse annotations.","hint-box"));
-  const fragment=document.createDocumentFragment();
-  for(const o of objects){
-    const active=state.selected?.pane===state.active&&state.selected?.id===o.id;
-    const b=text("button","","object-card"+(active?" active":""));b.style.setProperty("--role",color(o.label));b.dataset.object=o.id;
-    const top=text("span","","object-top");top.append(document.createElement("i"),text("span",nice(o.label)),text("span",o.kind,"kind"));
-    b.append(top,text("small",o.text||o.source_id));b.title=o.source_id;b.onclick=()=>select(state.active,o.id,true);fragment.append(b);
-  }
-  $("object-list").append(fragment);
-}
+function renderObjectList() {}
 function clearSelection() {
-  state.selected=null;$("selection-detail").replaceChildren();$("inspect-title").textContent="The page, up close";
-  $("inspect-hint").textContent="Click a row, span or region to see its label, text and source.";
+  state.selected=null;$("selection-detail").replaceChildren();$("inspect-title").textContent="";
   document.querySelector(".inspector").classList.remove("has-selection");redraw();
 }
 function select(pane,id,focus) {
   const p=panes[pane],o=p.page.objects.find(item=>item.id===id);if(!o)return;
   activate(pane);state.selected={pane,id};document.querySelector(".inspector").classList.add("has-selection");
-  $("inspect-title").textContent=nice(o.label);$("inspect-hint").textContent=p.page.dataset_name;
+  $("inspect-title").textContent=nice(o.label);
   const detail=$("selection-detail");detail.replaceChildren();
   const badge=text("span",`${nice(o.label)} · ${o.kind}`,"badge");badge.style.setProperty("--role",color(o.label));detail.append(badge);
   const meta=text("div","","detail-meta");
@@ -231,13 +214,10 @@ function renderCollection() {
   const available=allowedDatasets();
   if(!available.length)throw new Error("No collections are available in this view");
   if(!available.some(d=>d.id===state.dataset))state.dataset=available[0].id;
-  $("dataset").replaceChildren(...available.map(d=>new Option(`${outputName(d)} · ${d.pages.length}`,d.id)));
-  $("dataset").value=state.dataset;collectionNote();
-  $("output").replaceChildren(...available.map(d=>new Option(outputName(d),d.id)));
-  $("output").value=state.dataset;$("output").disabled=false;
-  const books=[...new Map(dataset().pages.map(p=>[p.book,p.title])).entries()];
-  $("book").replaceChildren(new Option("All books", ""),...books.map(([book,title])=>new Option(`${book} · ${title}`,book)));
-  $("search").value="";$("book").value="";
+  const group=(label,ds)=>{const g=document.createElement("optgroup");g.label=label;g.append(...ds.map(d=>new Option(`${outputName(d)} · ${d.pages.length}`,d.id)));return g;};
+  const fin=available.filter(d=>d.group==="finished"),old=available.filter(d=>d.group!=="finished");
+  $("dataset").replaceChildren(...[fin.length&&group("Finished work",fin),old.length&&group("Earlier experiments",old)].filter(Boolean));
+  $("dataset").value=state.dataset;state.mode=dataset().group==="finished"?"finished":"archive";
   renderPages();
 }
 async function selectOutput(id) {
@@ -249,8 +229,7 @@ async function selectOutput(id) {
   if(state.dataset===id&&state.key===key&&box&&current.page?.image.width===image?.width&&current.page?.image.height===image?.height)current.setBox(box);
 }
 function renderPages() {
-  const q=$("search").value.trim().toLowerCase(),book=$("book").value;
-  state.filtered=dataset().pages.filter(p=>(!book||p.book===book)&&(!q||`${p.display_id||""} ${p.book} ${p.title} ${String(p.scan).padStart(5,"0")} ${p.scan}`.toLowerCase().includes(q)));
+  state.filtered=dataset().pages;
   const bookCount=new Set(state.filtered.map(p=>p.book)).size;
   $("page-count").textContent=`${state.filtered.length} scans · ${bookCount} ${bookCount===1?"book":"books"}`;
   const fragment=document.createDocumentFragment();
@@ -274,8 +253,7 @@ async function fetchPage(ds,key) {return readJSON(apiURL("/api/page",ds,key));}
 async function loadPage(key) {
   const serial=++state.serial;state.key=key;state.role=null;state.active=isComparison()?"b":"a";state.selected=null;
   $("selection-detail").replaceChildren();document.querySelector(".inspector").classList.remove("has-selection");
-  $("inspect-title").textContent="The page, up close";$("inspect-hint").textContent="Click a row, span or region to see its label, text and source.";
-  $("object-search").value="";$("object-list").replaceChildren();$("object-count").textContent="";
+  $("inspect-title").textContent="";
   const descriptor=dataset().pages.find(p=>p.key===key);if(!descriptor)return;
   $("page-title").textContent=`${descriptor.display_id?descriptor.display_id+" · ":""}Scan ${String(descriptor.scan).padStart(5,"0")}`;
   $("page-subtitle").textContent=`${descriptor.book} · ${descriptor.split}`;$("page-title").title=descriptor.title;
@@ -284,7 +262,7 @@ async function loadPage(key) {
   updatePosition();saveURL();
   const selectedCard=Array.from($("page-list").children).find(c=>c.dataset.key===key);selectedCard?.scrollIntoView({block:"nearest"});
   const compare=isComparison();updatePageView();
-  panes.a.empty("Loading scan…","");panes.b.empty("Loading scan…","");
+  panes.a.empty("Loading scan…","");
   let reference=null;
   if(compare){
     const choices=state.index.datasets.filter(d=>(dataset().group!=="finished"||d.group==="finished")&&d.id!==state.dataset&&d.pages.some(p=>p.key===key));
@@ -300,7 +278,6 @@ async function loadPage(key) {
   else if(compare)panes.a.empty("No matching collection", "Choose a page included in both an annotation collection and a model output.");
   await Promise.all(jobs);if(serial!==state.serial)return;
   activate(panes[mainID].page?mainID:isSplitView()?"a":mainID);redraw();saveURL();
-  $("page-message").textContent=dataset().group==="finished"?dataset().description:"Earlier experiment · click a line or region to inspect the saved output.";
 }
 function setMode(mode) {
   state.mode=mode;state.ref="auto";
@@ -311,40 +288,27 @@ function setMode(mode) {
 }
 
 async function init() {
-  panes.a=new PagePane("a");panes.b=new PagePane("b");
+  panes.a=new PagePane("a");
   try {
     state.index=await readJSON(staticSite?"data/index.json":"/api/index");
-    if(staticSite){document.querySelector(".local-badge").textContent="Web · view only";$("source-credits").hidden=false;}
+    if(staticSite){$("source-credits").hidden=false;}
     const hash=new URLSearchParams(location.hash.slice(1));
     let savedPageView;try { savedPageView=localStorage.getItem("annotation-page-view"); } catch(e) { /* Storage is optional. */ }
     state.pageView=(hash.get("view")||savedPageView)==="split"?"split":"single";
-    state.mode=["finished","compare","archive"].includes(hash.get("mode"))?hash.get("mode"):"finished";
+    state.mode="finished";
     state.dataset=hash.get("dataset")||"finished-interview";state.ref=hash.get("reference")||"auto";
     const requested=state.index.datasets.find(d=>d.id===state.dataset);
     if(requested&&requested.group!=="finished"&&state.mode!=="compare")state.mode="archive";
     state.key=hash.get("page")||"bsb10144443/00040";
-    if(state.mode==="compare")state.pageView="split";
-    for(const b of document.querySelectorAll("[data-mode]")){b.classList.toggle("active",b.dataset.mode===state.mode);b.onclick=()=>setMode(b.dataset.mode);}
-    const archived=state.index.datasets.filter(d=>d.group!=="finished"&&d.pages.length);
-    $("experiment").replaceChildren(new Option("Choose an experiment…",""),...archived.map(d=>new Option(`${d.name} · ${d.pages.length}`,d.id)));
-    $("experiment-archive").hidden=!archived.length;
-    $("experiment-archive").open=state.mode==="archive";
-    $("experiment").onchange=()=>{const id=$("experiment").value;if(!id)return;state.mode="archive";state.dataset=id;setMode("archive");};
     renderCollection();
     $("dataset").onchange=()=>selectOutput($("dataset").value);
-    $("output").onchange=()=>selectOutput($("output").value);
-    $("search").oninput=renderPages;$("book").onchange=renderPages;
-    $("clear-filters").onclick=()=>{$("search").value="";$("book").value="";renderPages();};
     $("prev").onclick=()=>navigate(-1);$("next").onclick=()=>navigate(1);
-    $("reference").onchange=()=>{state.ref=$("reference").value;loadPage(state.key);};
-    $("page-view").onchange=()=>setPageView($("page-view").value);
     for(const input of document.querySelectorAll(".layer-controls input"))input.onchange=redraw;
-    $("opacity").oninput=()=>Object.values(panes).forEach(p=>p.draw());$("object-search").oninput=renderObjectList;
+    $("opacity").oninput=()=>Object.values(panes).forEach(p=>p.draw());
     $("overlays").onclick=()=>{state.overlays=!state.overlays;$("overlays").textContent=state.overlays?"Hide overlays":"Show overlays";redraw();};
     $("mistakes").onclick=()=>{state.mistakes=state.mistakes===false;redraw();};
     $("fit").onclick=()=>panes[state.active].fit();$("zoom-in").onclick=()=>panes[state.active].zoom(1.4);$("zoom-out").onclick=()=>panes[state.active].zoom(1/1.4);
     $("expand").onclick=()=>{const expanded=document.body.classList.toggle("focus-view");$("expand").textContent=expanded?"Restore panels":"Expand";};
-    $("sync").onchange=()=>{const p=panes[state.active];if(p.box)p.setBox(p.box);};
     document.addEventListener("keydown",e=>{
       if(["INPUT","SELECT","TEXTAREA"].includes(e.target.tagName)||e.ctrlKey||e.metaKey||e.altKey)return;
       if(e.key==="ArrowLeft"){e.preventDefault();navigate(-1);}if(e.key==="ArrowRight"){e.preventDefault();navigate(1);}
