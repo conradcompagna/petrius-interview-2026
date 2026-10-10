@@ -18,15 +18,14 @@
       <div class="layer-controls" aria-label="Overlay layers">
         <label><input type="checkbox" id="layer-region" checked>Regions</label>
         <label><input type="checkbox" id="layer-row" checked>Rows</label>
-        <label><input type="checkbox" id="layer-span" checked>Spans</label>
         <label><input type="checkbox" id="layer-object" checked>Objects</label>
-        <details class="more-layers"><summary>More</summary><div><label><input type="checkbox" id="layer-draft">Draft rows</label><label><input type="checkbox" id="baselines">Baselines</label><label><input type="checkbox" id="order">Reading order</label></div></details>
+        <details class="more-layers"><summary>More</summary><div><label><input type="checkbox" id="baselines">Baselines</label><label><input type="checkbox" id="order">Reading order</label></div></details>
       </div>
       <div class="view-controls"><label class="opacity">Fill <input id="opacity" type="range" min="0" max="50" value="12" aria-label="Overlay fill opacity"></label><button id="overlays" title="Toggle overlays (O)">Hide overlays</button><button id="mistakes" title="Outline in red the lines whose label differs from the reference (M)" hidden>Mistakes</button><button id="expand" title="Give the scan the full window width">Expand</button><button id="fit" title="Fit page (F)">Fit</button><button id="zoom-out" aria-label="Zoom out">−</button><span id="zoom-value">100%</span><button id="zoom-in" aria-label="Zoom in">+</button></div>
     </div>
     <div id="legend" class="legend" aria-label="Filter overlays by label"></div>
     <div id="panes" class="panes">
-      <section class="pane" id="pane-a"><div class="pane-head"><div><span id="name-a">Training labels</span><small id="status-a"></small></div><a id="text-a" class="text-button" target="_blank" rel="noopener" hidden>Read text ↗</a><a id="json-a" class="text-button" target="_blank" rel="noopener">JSON ↗</a></div><div class="viewport" id="view-a"></div></section>
+      <section class="pane" id="pane-a"><div class="pane-head"><div><span id="name-a">Training labels</span><small id="status-a"></small></div></div><div class="viewport" id="view-a"></div></section>
     </div>
     <div class="viewer-foot"><span id="page-message">Scroll to zoom · drag to pan · click a boundary to inspect</span></div>
   </section>

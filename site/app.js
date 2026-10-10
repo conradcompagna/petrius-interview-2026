@@ -59,8 +59,7 @@ class PagePane {
     if(this.jsonURL){URL.revokeObjectURL(this.jsonURL);this.jsonURL=null;}
     this.page=null; this.svg=null; this.box=null; this.host.replaceChildren(); this.host.classList.remove("loading");
     const el=text("div", "", "empty"); el.append(text("strong",title),text("small",explanation)); this.host.append(el);
-    $("json-"+this.id).removeAttribute("href"); $("status-"+this.id).textContent="";
-    $("text-"+this.id).hidden=true;
+    $("status-"+this.id).textContent="";
   }
   show(page) {
     this.page=page; this.host.replaceChildren(); this.host.classList.add("loading");
@@ -69,9 +68,6 @@ class PagePane {
     for (const o of page.objects) if (o.kind !== "draft") counts[o.kind]=(counts[o.kind]||0)+1;
     $("status-"+this.id).textContent=page.pending?"Processing pending — source scan available":Object.entries(counts).map(([k,n])=>`${n} ${k}${n===1?"":"s"}`).join(" · ") || (["ocr","segmentation"].includes(page.kind)?"No text detections":"No saved annotations");
     $("status-"+this.id).title="";
-    if(staticSite){this.jsonURL=URL.createObjectURL(new Blob([JSON.stringify(page,null,2)],{type:"application/json"}));$("json-"+this.id).href=this.jsonURL;}
-    else $("json-"+this.id).href=apiURL("/api/page",page.dataset,page.key);
-    $("text-"+this.id).hidden=!page.has_ocr||page.pending;$("text-"+this.id).href=apiURL("/text",page.dataset,page.key);
     this.svg=svgNode("svg", {role:"img", "aria-label":`${page.dataset_name}, ${page.book}, scan ${page.scan}`, preserveAspectRatio:"xMidYMid meet"});
     const img=svgNode("image", {href:apiURL("/image",page.dataset,page.key),width:page.image.width,height:page.image.height});
     img.addEventListener("load",()=>this.host.classList.remove("loading"));
@@ -235,7 +231,7 @@ function renderPages() {
   const fragment=document.createDocumentFragment();
   for(const p of state.filtered){
     const b=text("button","","page-card"+(p.key===state.key?" active":""));b.dataset.key=p.key;
-    const head=text("span","","scan");head.append(text("span",`${p.display_id?p.display_id+" · ":""}Scan ${String(p.scan).padStart(5,"0")}`),text("span",["ocr","segmentation"].includes(dataset().kind)?(p.ocr_ready?(dataset().kind==="ocr"?"OCR ready":"ready"):"pending"):p.semantic_units?`${p.semantic_units} units`:p.split,"dot-count"));
+    const head=text("span","","scan");head.append(text("span",`${p.display_id?p.display_id+" · ":""}Scan ${String(p.scan).padStart(5,"0")}`),text("span",["ocr","segmentation"].includes(dataset().kind)?"":p.semantic_units?`${p.semantic_units} units`:p.split,"dot-count"));
     b.append(head,text("span",p.book,"book-id"),text("span",p.title,"book-title"));b.title=p.title;b.onclick=()=>loadPage(p.key);fragment.append(b);
   }
   $("page-list").replaceChildren(fragment);
