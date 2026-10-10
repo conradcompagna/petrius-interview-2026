@@ -253,8 +253,6 @@ async function loadPage(key) {
   const descriptor=dataset().pages.find(p=>p.key===key);if(!descriptor)return;
   $("page-title").textContent=`${descriptor.display_id?descriptor.display_id+" · ":""}Scan ${String(descriptor.scan).padStart(5,"0")}`;
   $("page-subtitle").textContent=`${descriptor.book} · ${descriptor.split}`;$("page-title").title=descriptor.title;
-  $("page-message").textContent="Scroll to zoom · drag to pan · click an annotation to inspect";
-  $("page-message").title=descriptor.title;
   updatePosition();saveURL();
   const selectedCard=Array.from($("page-list").children).find(c=>c.dataset.key===key);selectedCard?.scrollIntoView({block:"nearest"});
   const compare=isComparison();updatePageView();
@@ -287,7 +285,7 @@ async function init() {
   panes.a=new PagePane("a");
   try {
     state.index=await readJSON(staticSite?"data/index.json":"/api/index");
-    if(staticSite){$("source-credits").hidden=false;}
+    if(staticSite){}
     const hash=new URLSearchParams(location.hash.slice(1));
     let savedPageView;try { savedPageView=localStorage.getItem("annotation-page-view"); } catch(e) { /* Storage is optional. */ }
     state.pageView=(hash.get("view")||savedPageView)==="split"?"split":"single";
