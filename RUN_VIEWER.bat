@@ -1,4 +1,5 @@
 @echo off
 cd /d "%~dp0"
-py -3 -m annotation_viewer.server --open
+start "" http://localhost:8880/
+py -3 -m http.server 8880 --directory site
 if errorlevel 1 pause
