@@ -13,7 +13,7 @@ function apiURL(route, collection, key) {
   if(!staticSite)return `${route}?${new URLSearchParams({dataset:collection,key})}`;
   const page=dataset(collection)?.pages.find(p=>p.key===key);
   if(!page)throw new Error("This page is not in the published collection");
-  return route==="/image"?page.image_url:route==="/text"?page.text_url:page.annotation;
+  return route==="/image"?page.image_url.replace("/full/full/0/default.jpg","/full/2000,/0/default.jpg"):route==="/text"?page.text_url:page.annotation;
 }
 async function readJSON(url) {
   const response=await fetch(url,{cache:"no-cache"});
