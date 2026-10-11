@@ -16,7 +16,7 @@ function apiURL(route, collection, key) {
   return route==="/image"?page.image_url:route==="/text"?page.text_url:page.annotation;
 }
 async function readJSON(url) {
-  const response=await fetch(url);
+  const response=await fetch(url,{cache:"no-cache"});
   if(!response.ok)throw new Error(`Could not load ${url} (${response.status})`);
   if(!url.endsWith(".gz"))return response.json();
   const bytes=new Uint8Array(await response.arrayBuffer());
