@@ -1,53 +1,49 @@
 # Historical Latin Document Analysis interview submission
 
-## Open the reader
-
-[Open the reader in your browser](https://conradcompagna.github.io/historical-latin-document-analysis/). No download or installation is needed to view it.
-
-Choose a collection from the menu, then a page from the list. Click an outlined region or line to see its label and OCR. The collections contain Task I results, parser comparisons, MDZ OCR samples, stock-model comparisons, D-FINE annotations and held-out results, neural-tagger annotations and held-out results, and full-pipeline results on the two task pages.
-
-## Download and prepare the programs
-
-These steps are for Windows 10 or 11. You do not need to type commands.
-
-1. At the top of this GitHub page, click the green **Code** button, then **Download ZIP**.
-2. In your Downloads folder, right-click the downloaded ZIP and select **Extract All**, then **Extract**.
-3. Open the extracted folder, then open `historical-latin-document-analysis-main`. You should see this README, `GET_ASSETS.bat`, `RUN_RANDOM_PAGES.bat`, and the folders listed below. This is the main repository folder; run the programs from this extracted copy.
-4. [Download the Python 3.12 Windows installer](https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe). Open it, tick **Add python.exe to PATH**, then click **Install Now**. Keep the default options, including the Python launcher. Close the installer when it finishes.
-
 | Folder | Contents |
 |---|---|
-| `task1_min/` | Task I program, reference labels, labelled page images, line records and confusion matrix |
-| `inference/` | Full pipeline, random-page sampler, matching-book list, setup and dependencies; third-party licences are in `licenses/` |
-| `site/` | The web reader and its page annotations |
-| `tools/` | Model download and site validation scripts |
-| `docs/` | [Notenew.docx](docs/Notenew.docx), model download manifest, image sources and verification records |
-| `.github/workflows/` | GitHub Pages deployment |
+| `task1_min/` | Task I parser, reference labels and evaluation results |
+| `inference/` | Neural pipeline, random-page sampler and dependencies |
+| `models/` (downloaded separately) | D-FINE, PERO and neural-tagger weights |
+| `site/` | Viewer and datasets |
+| `tools/` | Model downloader and site validator |
+| `docs/` | Submission note, model manifest, image sources and verification records |
+| `.github/workflows/` | Viewer deployment |
 
-## Run Task I and its evaluation
+The Task I submission includes the requested algorithm-based parser and its evaluation. The neural pipeline runs D-FINE region detection, PERO line detection and OCR, and neural classification on other pages with the same layout. [Trained weights](https://github.com/conradcompagna/historical-latin-document-analysis/releases/download/interview-2026-10-07/assets-models-01.zip) are provided separately. The viewer shows the datasets behind [Notenew.docx](docs/Notenew.docx).
 
-1. In the main repository folder, open `task1_min`.
-2. Double-click `run.bat` (Windows may display the filename as `run`). A console window opens and installs the required software on the first run. Leave it open until the program finishes.
-3. The program downloads scans 40–41 and their MDZ OCR, labels the pages, and compares the labels with `reference.csv`. The console displays the confusion matrix and the number of correct labels. Press any key when prompted.
-4. Open `labels_00040.jpg` and `labels_00041.jpg` in the same folder to inspect the coloured labels. `evaluation.json` saves the confusion matrix; `lines.csv` saves the line labels and coordinates. `page_00040.json` and `page_00041.json` save the structured page results.
+## [Open the viewer](https://conradcompagna.github.io/historical-latin-document-analysis/)
 
-## Download the model weights
+- **1 · Task I:** Algorithm-based parser results on scans 40–41.
+- **2a · First parser, same book:** The 102-page review sample from the 1582 Decretals.
+- **2b · First parser, other books:** Parser results on 132 pages from eleven other editions.
+- **3a · MDZ OCR, region crossings:** Fifty sample pages showing OCR rows crossing region boundaries.
+- **3b · MDZ OCR, dictionary scores:** Fifty sample pages with the lowest dictionary-match scores.
+- **4 · Stock models:** Layout and OCR comparisons on fourteen sample pages.
+- **5a · Region annotations:** Annotated regions on 100 training pages and 20 evaluation pages.
+- **5b · D-FINE evaluation:** Predicted regions on the 20 held-out pages.
+- **6a · Line annotations:** Line labels, OCR and mixed-line spans on 100 training pages and 20 evaluation pages.
+- **6b · Neural-tagger evaluation:** Predicted region and line labels on the 20 held-out pages.
+- **6c · Full pipeline:** D-FINE, PERO and neural-tagger results on the two task pages.
 
-1. Return to the main repository folder and double-click `GET_ASSETS.bat`.
-2. It downloads the 490 MB model archive, checks it, and extracts it into `models`. Wait until the window says **Model weights are ready**, then press any key to close it.
+## Run the Task I parser and evaluation
 
-The archive contains the fine-tuned D-FINE region detector, both neural taggers, and PERO's line and OCR models. To download it manually, [download assets-models-01.zip](https://github.com/conradcompagna/historical-latin-document-analysis/releases/download/interview-2026-10-07/assets-models-01.zip), right-click it and select **Extract All**. Copy the extracted `models` folder into the main repository folder, beside this README.
+Windows 10 or 11:
 
-## Test random pages
+1. Click **Code → Download ZIP** on this GitHub page, then right-click the ZIP and choose **Extract All**.
+2. Open the extracted `historical-latin-document-analysis-main` folder containing this README; this is the repository folder.
+3. [Install Python 3.12](https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe): tick **Add python.exe to PATH**, keep the default options, then click **Install Now**.
+4. In the repository folder, open `task1_min` and double-click `run.bat`; wait for it to finish, then press any key when prompted.
 
-1. In the main repository folder, double-click `RUN_RANDOM_PAGES.bat`.
-2. The first run installs the inference software. Leave the console window open while it installs and processes the pages.
-3. It selects three random pages from the ten matching-layout editions, downloads their original images, and runs D-FINE, PERO and the neural taggers. The known training, evaluation and reader pages are excluded. Each run selects a fresh sample.
-4. Open `inference`, then `outputs`, then the newest folder beginning `random_`. Open `overlays` to inspect the labelled images and `text` to read the selected text. `predictions` contains the labels and coordinates; `pagexml` contains the OCR. `random_sample.json` records the books, scans, source links and random seed; `run_report.json` records the results.
+The first run installs dependencies and downloads scans 40–41 and their MDZ OCR. Results stay in `task1_min`: `labels_00040.jpg` and `labels_00041.jpg` show the labels, `lines.csv` records them, and `evaluation.json` compares them with `reference.csv`.
 
-## Test your own page images
+## Run the neural pipeline on fresh random pages
 
-1. Save your page images as JPG or PNG files.
-2. Open `inference` in the main repository folder and locate `run.bat`.
-3. In another File Explorer window, select your page images and drag them onto that `run.bat` file. This runs the full pipeline on those images. Double-clicking `run.bat` without dragging images onto it processes the two assigned task pages.
-4. Wait for the results message, then open `inference/outputs`. Labelled images are in `overlays`, selected text in `text`, and structured results in `predictions`.
+Complete steps 1–3 above first.
+
+1. In the repository folder, double-click `GET_ASSETS.bat` to download and install the 490 MB model weights; wait for **Model weights are ready**, then press any key.
+2. Double-click `RUN_RANDOM_PAGES.bat`; the first run installs dependencies, then runs the pipeline; wait for the results message.
+
+Each run selects three random pages from ten books with the task layout, excluding the training, evaluation and viewer pages.
+
+Open `inference/outputs`, then the newest `random_` folder: `overlays` contains labelled images, `text` contains extracted text, and `predictions` contains labels and coordinates.
