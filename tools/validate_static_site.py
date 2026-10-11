@@ -2,6 +2,7 @@
 import gzip
 import json
 from pathlib import Path
+import re
 import sys
 from urllib.parse import urlparse
 
@@ -51,11 +52,14 @@ def validate(root):
     assert images == {p.resolve() for p in (root / 'data/images').rglob('*') if p.is_file()}, 'Unreferenced bundled scans'
     for required in ['index.html', 'app.js', 'style.css', 'SOURCES.html']:
         local(required)
+    books = {page['book'] for dataset in index['datasets'] for page in dataset['pages']}
+    source_books = set(re.findall(r'<tr><td>([^<]+)</td>', local('SOURCES.html').read_text(encoding='utf8')))
+    assert source_books == books, 'Source inventory does not match the reader books'
     size = sum(p.stat().st_size for p in root.rglob('*') if p.is_file())
     assert size < 1_000_000_000, f'Site exceeds GitHub Pages limit: {size} bytes'
     result = {'datasets': len(collections), 'pages': sum(collections.values()),
               'collections': collections, 'bundled_scans': len(images),
-              'objects': objects, 'bytes': size}
+              'objects': objects, 'bytes': size, 'source_books': len(books)}
     print(json.dumps(result, indent=2))
     return result
 
