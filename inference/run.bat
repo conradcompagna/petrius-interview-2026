@@ -7,5 +7,5 @@ if not exist ".venv\Scripts\python.exe" call setup.bat
 if errorlevel 1 exit /b 1
 ".venv\Scripts\python.exe" -X utf8 run.py %*
 if errorlevel 1 (echo Inference failed. & pause & exit /b 1)
-echo Results are in the outputs folder.
+echo Results are in "%~dp0outputs". Random runs have their own dated folders.
 pause

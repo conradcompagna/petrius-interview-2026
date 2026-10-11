@@ -9,8 +9,7 @@ if errorlevel 1 goto failed
 if errorlevel 1 goto failed
 ".venv\Scripts\python.exe" -m pip install -r requirements-lock-cpu.txt
 if errorlevel 1 goto failed
-echo Setup complete. Double-click run.bat to process the two interview pages.
-pause
+echo Setup complete. Continuing to inference.
 exit /b 0
 :failed
 echo Setup failed. Read the message above. Python 3.12 is required.
