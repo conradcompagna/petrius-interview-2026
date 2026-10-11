@@ -80,9 +80,9 @@ for d in study[:50]:
     for k, r in enumerate(ann["regions"]):
         sp = [[x * fx, y * fy] for x, y in r["polygon"]]
         xs, ys = [q[0] for q in sp], [q[1] for q in sp]
-        objs.append(obj(k, "region", "text_region", [min(xs), min(ys), max(xs), max(ys)], note=f"annotated region {r['id']}", poly=sp + [sp[0]]))
+        objs.append(obj(k, "region", "annotated_region", [min(xs), min(ys), max(xs), max(ys)], note=f"annotated region {r['id']}", poly=sp + [sp[0]]))
     for k, pb in enumerate(hocr_pars(hp)):
-        objs.append(obj(1000 + k, "region", "mdz_paragraph", pb, note="MDZ hOCR paragraph"))
+        objs.append(obj(1000 + k, "paragraph", "mdz_paragraph", pb, note="MDZ hOCR paragraph"))
     flagged = {tuple(int(v) for v in f["bbox"]): f for f in d["row_flags"]}
     for k, (bb, text, ws) in enumerate(lines):
         f = flagged.get(tuple(bb))
@@ -109,7 +109,7 @@ for hit, book, scan, st in scores:
     if perbook[book] == 2 or (book, scan) in seen: continue
     perbook[book] += 1; nB += 1
     size, lines = hocr_lines(os.path.join(sv, f"{book}_{scan:05d}.hocr"))
-    objs = [obj(1000 + k, "region", "mdz_paragraph", pb, note="MDZ hOCR paragraph") for k, pb in enumerate(hocr_pars(os.path.join(sv, f"{book}_{scan:05d}.hocr")))]
+    objs = [obj(1000 + k, "paragraph", "mdz_paragraph", pb, note="MDZ hOCR paragraph") for k, pb in enumerate(hocr_pars(os.path.join(sv, f"{book}_{scan:05d}.hocr")))]
     for k, (b, text, ws) in enumerate(lines):
         t, h = line_lex(ws)
         bad = t >= 3 and h / t < 0.25
@@ -123,10 +123,10 @@ for hit, book, scan, st in scores:
 site = os.path.join(SUB, "site", "data")
 idx_path = os.path.join(site, "index.json")
 idx = json.load(open(idx_path, encoding="utf-8"))
-DSETS = {"A": ("mdz-ocr-regions", "MDZ OCR · rows across regions · 50 pages"),
-         "B": ("mdz-ocr-lexicon", "MDZ OCR · lexicon test · 50 pages")}
+DSETS = {"A": ("mdz-ocr-regions", "3a · MDZ library OCR · rows crossing regions"),
+         "B": ("mdz-ocr-lexicon", "3b · MDZ library OCR · lowest lexicon scores")}
 idx["datasets"] = [d for d in idx["datasets"] if d["id"] not in (DS, "mdz-ocr-regions", "mdz-ocr-lexicon")]
-pos = max([i for i, d in enumerate(idx["datasets"]) if d.get("group") == "finished"], default=-1) + 1
+pos = next((i + 1 for i, d in enumerate(idx["datasets"]) if d["id"] == "legacy-gold-review"), len(idx["datasets"]))
 for part in "AB":
     dsid, dsname = DSETS[part]; entries = []
     for rec, pp in records:
