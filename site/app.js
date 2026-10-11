@@ -78,7 +78,6 @@ class PagePane {
   fit(sync=true) { if(this.page)this.setBox([0,0,this.page.image.width,this.page.image.height],sync); }
   setBox(box,sync=true) {
     if(!this.svg)return; this.box=box;this.svg.setAttribute("viewBox",box.join(" "));
-    if(gothicView())this.svg.style.setProperty("--heat-stroke-width",Math.min(1,.25*Math.sqrt(this.page.image.width/box[2]))+"px");
     if(this.id===state.active)$("zoom-value").textContent=Math.round(this.page.image.width/box[2]*100)+"%";
 
   }
@@ -101,6 +100,8 @@ class PagePane {
     this.layers.replaceChildren();
     if(!this.page)return;
     const opacity=Number($("opacity").value)/100;
+    const heatLayer=gothicView()?svgNode("g",{opacity,class:"row-heatmap"}):null;
+    if(heatLayer)heatLayer.style.mixBlendMode="multiply";
     // Keep spans and initials above rows. Within each layer, draw excluded
     // detections first: overlapping outside duplicates must not intercept clicks
     // on the retained, labelled annotation visible underneath them.
@@ -112,13 +113,14 @@ class PagePane {
       const rings=baselineOnly ? [o.baseline] : o.components?.length ? o.components.flatMap(c=>[c.polygon,...(c.holes||[])]) : [o.polygon,...(o.holes||[])];
       const d=rings.filter(r=>r?.length).map(r=>"M"+r.map(p=>p.join(",")).join("L")+(baselineOnly?"":"Z")).join(" ");
       const sv=surpriseView()&&o.kind==="row",hc=sv&&typeof o.surprise_bpc==="number"?heat((o.surprise_bpc-2)/3):null;
-      const lm=gothicView();
-      const path=lm?svgNode("path",{d,fill:baselineOnly?"none":lm?(hc||"none"):color(o.label),"fill-opacity":lm?Math.min(.12,opacity):o.draft ? .035 : opacity,stroke:lm?(hc||"#87948c"):color(o.label),"stroke-opacity":lm?(sv ? .8 : .25):o.draft ? .45 : 1,"stroke-width":lm?1:baselineOnly?1.7:o.kind==="region"?1.7:1.15,"fill-rule":"evenodd","data-object":o.id,class:"geometry"+(sv?" surprise-row":"")}):svgNode("path",{d,fill:baselineOnly?"none":sv?(hc||"none"):color(o.label),"fill-opacity":sv?Math.min(.8,opacity*3+.1):o.draft ? .035 : opacity,stroke:sv?(hc||"#9aa0a6"):color(o.label),"stroke-opacity":o.draft ? .45 : 1,"stroke-width":baselineOnly?1.7:o.kind==="region"?1.7:1.15,"fill-rule":"evenodd","data-object":o.id,class:"geometry"});
+      const lm=gothicView()&&o.kind==="row";
+      const path=lm?svgNode("path",{d,fill:baselineOnly?"none":hc||"none","fill-opacity":1,stroke:hc||"#9aa0a6","stroke-opacity":.65,"stroke-width":.7,"fill-rule":"evenodd","data-object":o.id,class:"geometry"}):svgNode("path",{d,fill:baselineOnly?"none":sv?(hc||"none"):color(o.label),"fill-opacity":sv?Math.min(.8,opacity*3+.1):o.draft ? .035 : opacity,stroke:sv?(hc||"#9aa0a6"):color(o.label),"stroke-opacity":o.draft ? .45 : 1,"stroke-width":baselineOnly?1.7:o.kind==="region"?1.7:1.15,"fill-rule":"evenodd","data-object":o.id,class:"geometry"});
       if(lm&&sv&&!baselineOnly)path.setAttribute("pointer-events","all");
       if(baselineOnly){path.setAttribute("vector-effect","non-scaling-stroke");path.setAttribute("pointer-events","stroke");}
       if(o.draft)path.setAttribute("stroke-dasharray","4 3");
       if(state.selected?.pane===this.id&&(state.selected.id===o.id||state.selected.id==="region:"+o.parent))path.classList.add("selected");
-      if(o.text){const title=svgNode("title");title.textContent=o.text;path.append(title);}this.layers.append(path);
+      if(o.text){const title=svgNode("title");title.textContent=o.text;path.append(title);}
+      if(lm){if(!heatLayer.parentNode)this.layers.append(heatLayer);heatLayer.append(path);}else this.layers.append(path);
       if(o.mistake&&state.mistakes!==false&&!surpriseView()){this.layers.append(svgNode("path",{d,fill:"#e01b24","fill-opacity":.28,stroke:"#e01b24","stroke-width":3,"vector-effect":"non-scaling-stroke","fill-rule":"evenodd","pointer-events":"none",class:"mistake"}));}
       if(!baselineOnly&&false&&o.baseline?.length)this.layers.append(svgNode("polyline",{points:o.baseline.map(p=>p.join(",")).join(" "),fill:"none",stroke:color(o.label),"stroke-width":1.2,"vector-effect":"non-scaling-stroke","pointer-events":"none"}));
       if(false&&o.reading_order!==null&&o.reading_order!==undefined){
@@ -162,7 +164,7 @@ function renderLegend() {
   }
   if(!labels.size)$("legend").append(text("span","No annotations in the enabled layers", "legend-empty"));
 }
-function redraw() {$("output-format").hidden=gothicView()||!hasSurprise();$("opacity").max=gothicView()?"12":"50";renderSurpriseKey();renderLegend();Object.values(panes).forEach(p=>p.draw());updateMistakes();}
+function redraw() {$("output-format").hidden=gothicView()||!hasSurprise();renderSurpriseKey();renderLegend();Object.values(panes).forEach(p=>p.draw());updateMistakes();}
 function updateMistakes() {
   const objs=Object.values(panes).flatMap(p=>p.page?.objects||[]),flagged=objs.filter(o=>o.mistake!==null&&o.mistake!==undefined),n=flagged.filter(o=>o.mistake).length,nr=flagged.filter(o=>o.mistake&&o.kind==="region").length,b=$("mistakes");if(b&&surpriseView()){b.hidden=true;return;}
   if(!b)return;b.hidden=!flagged.length;b.textContent=(state.mistakes===false?"Show mistakes":"Hide mistakes")+" ("+(n-nr)+" lines, "+nr+" regions)";b.style.color=n?"#e01b24":"";
@@ -195,7 +197,7 @@ function select(pane,id,focus) {
       const word=text("span","",/\S/u.test(part)?"heat-word":"");
       for(const c of part){const s=text("span",c,"heat-char"),b=o.char_bits[i++];if(typeof b==="number"&&/\S/u.test(c)){s.style.backgroundColor=paleHeat((b-1)/7);s.title=b.toFixed(1)+" bits per character";if(b>=5)s.style.boxShadow=`inset 0 -2px ${heat((b-1)/7)}`;}word.append(s);}box.append(word);
     }
-    detail.append(box,text("div","Darker underline = higher character surprise. Hover a letter for its score.","detail-note"));
+    detail.append(box);
     }else{
     const box=text("div","","detail-text");
     [...o.text].forEach((c,i)=>{const s=text("span",c),b=o.char_bits[i];if(typeof b==="number"){s.style.background=heat((b-1)/7);s.title=b.toFixed(1)+" bits";if(b>5)s.style.color="#fff";}box.append(s);});
@@ -222,7 +224,6 @@ function renderCollection() {
   $("dataset").replaceChildren(...available.map(d=>new Option(`${outputName(d)} · ${d.pages.length}`,d.id)));
   $("dataset").value=state.dataset;state.mode=dataset().group==="finished"?"finished":"archive";
   document.body.classList.toggle("gothic-view",gothicView());
-  $("opacity").max=gothicView()?"12":"50";$("opacity").value=gothicView()?"8":"12";
   renderPages();
 }
 async function selectOutput(id) {
