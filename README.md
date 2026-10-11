@@ -25,25 +25,23 @@ The Task I submission includes the requested algorithm-based parser and its eval
 - **6a · Line annotations:** Line labels, OCR and mixed-line spans on 100 training pages and 20 evaluation pages.
 - **6b · Neural-tagger evaluation:** Predicted region and line labels on the 20 held-out pages.
 - **6c · Full pipeline:** D-FINE, PERO and neural-tagger results on the two task pages.
+- **7 · Full pipeline, fresh pages:** Results on ten random legal-text pages from ten matching-layout books.
 
 ## Run the Task I parser and evaluation
 
-Windows 10 or 11:
+1. **Code → Download ZIP**; extract and open `historical-latin-document-analysis-main`.
+2. [Install Python 3.12 for Windows](https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe) with **Add python.exe to PATH** enabled.
+3. Open `task1_min` and double-click `run.bat`.
 
-1. Click **Code → Download ZIP** on this GitHub page, then right-click the ZIP and choose **Extract All**.
-2. Open the extracted `historical-latin-document-analysis-main` folder containing this README; this is the repository folder.
-3. [Install Python 3.12](https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe): tick **Add python.exe to PATH**, keep the default options, then click **Install Now**.
-4. In the repository folder, open `task1_min` and double-click `run.bat`; wait for it to finish, then press any key when prompted.
-
-The first run installs dependencies and downloads scans 40–41 and their MDZ OCR. Results stay in `task1_min`: `labels_00040.jpg` and `labels_00041.jpg` show the labels, `lines.csv` records them, and `evaluation.json` compares them with `reference.csv`.
+Results in `task1_min`: labelled JPGs, `lines.csv` and `evaluation.json` (comparison with `reference.csv`).
 
 ## Run the neural pipeline on fresh random pages
 
-Complete steps 1–3 above first.
+Download the repository and install Python as above.
 
-1. In the repository folder, double-click `GET_ASSETS.bat` to download and install the 490 MB model weights; wait for **Model weights are ready**, then press any key.
-2. Double-click `RUN_RANDOM_PAGES.bat`; the first run installs dependencies, then runs the pipeline; wait for the results message.
+1. In the repository folder, double-click `GET_ASSETS.bat` to download the weights (490 MB).
+2. Double-click `RUN_RANDOM_PAGES.bat`.
 
-Each run selects three random pages from ten books with the task layout, excluding the training, evaluation and viewer pages.
+Processes three random pages from ten matching-layout books, excluding training, evaluation and viewer pages.
 
-Open `inference/outputs`, then the newest `random_` folder: `overlays` contains labelled images, `text` contains extracted text, and `predictions` contains labels and coordinates.
+Results in the newest `inference/outputs/random_*` folder: `overlays` (images), `text` (text), `predictions` (labels).
