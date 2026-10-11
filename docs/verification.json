@@ -33,13 +33,14 @@
       "finished-region-eval": 20,
       "finished-neural-data": 120,
       "finished-neural-eval": 20,
-      "finished-interview": 2
+      "finished-interview": 2,
+      "finished-random-pipeline": 10
     },
-    "datasets": 11,
-    "pages": 632,
+    "datasets": 12,
+    "pages": 642,
     "bundled_scans": 36,
-    "objects": 93021,
-    "bytes": 87765122,
+    "objects": 95725,
+    "bytes": 88016457,
     "source_books": 80
   },
   "cleanup": {
@@ -72,5 +73,198 @@
     "temporary_download_removed": "passed",
     "release": "interview-2026-10-07",
     "archive_bytes": 490092757
+  },
+  "random_final_pipeline": {
+    "date": "2026-10-11",
+    "collection": "finished-random-pipeline",
+    "seed": 6129764580835734190,
+    "device": "cpu",
+    "runtime": {
+      "torch": "2.9.1+cpu",
+      "torchvision": "0.24.1+cpu",
+      "kraken": "7.1.1",
+      "dfine-kraken": "0.4.3",
+      "pero-ocr": "0.7.0"
+    },
+    "code_sha256": {
+      "inference/neural/extract.py": "68a67ba45cd248c6f6a66ceb8e080aeb116e16e9db178ac92f4b5ed921873841",
+      "inference/neural/model.py": "f2f6b82fb07620d41b5bdde36adaa12c458d0809607696489e381f942e42e3c7",
+      "inference/neural/predict.py": "52f556e57d35dffd20a826836fadab646aca4d55d078f4532e9f0c3b83cd7a06",
+      "inference/neural/train.py": "a5ee691fe8b315c008cf7af7934991988be4e4e2020de112f15c4fcdd9673af3",
+      "inference/random_pages.py": "63656db543501c314c61f19a60fd2013b8e30c782e97f2a71b1f7fad2965d89b",
+      "inference/run.py": "3b08190bf082be003b07a15c602c73920a765d207cc2489999ad684aa106984a"
+    },
+    "selection": "Sample books in shuffled rounds and scans uniformly without replacement within the middle 80 percent of each book; exclude D-FINE and neural training/evaluation pages and all pages already in the reader.",
+    "one_page_per_matching_layout_book": true,
+    "checked_content_and_layout_before_inference": true,
+    "candidates": 10,
+    "rejected_candidates": 0,
+    "excluded_prior_training_evaluation_and_reader_pages": true,
+    "geometry_labels_and_ocr_preserved_in_viewer": true,
+    "regions": 177,
+    "ocr_lines": 2527,
+    "selected_lines": 553,
+    "pages": [
+      {
+        "key": "bsb10627575/01327",
+        "regions": 14,
+        "lines": 271,
+        "selected_lines": 62,
+        "seconds": 32.77,
+        "source_url": "https://api.digitale-sammlungen.de/iiif/image/v2/bsb10627575_01327/full/full/0/default.jpg",
+        "source_image_sha256": "87f1471d2f94c4e034c1aea82f50fd5fc3059a82d08253d5f767d23c3619a559",
+        "prediction_sha256": "3149493ec0173eb1480b36ea33ffefec39db71f7f9da3c98dd45ed6f4b80745b",
+        "annotation_sha256": "18beb128e62ba0afc706fea7c8f7f33acbbc37078467fdace973c46b792d9171",
+        "source_checks": {
+          "content_bearing": true,
+          "task_layout": true,
+          "description": "Central legal-text columns with surrounding gloss."
+        }
+      },
+      {
+        "key": "bsb11198433/00035",
+        "regions": 18,
+        "lines": 204,
+        "selected_lines": 29,
+        "seconds": 18.68,
+        "source_url": "https://api.digitale-sammlungen.de/iiif/image/v2/bsb11198433_00035/full/full/0/default.jpg",
+        "source_image_sha256": "225cf8c798942dd41c8b7534a44badd1ce44196892ced7381fab0caaf1cd60d6",
+        "prediction_sha256": "5702dc5ff7ea754591a61b1d3795869940372d72735c4c8d1253d46c5c5b5f30",
+        "annotation_sha256": "facac4cce3adec5a14834cb98744f257ec2daa492874ef4beaef7f4ef358d19e",
+        "source_checks": {
+          "content_bearing": true,
+          "task_layout": true,
+          "description": "Central legal-text columns with surrounding gloss."
+        }
+      },
+      {
+        "key": "bsb10506594/01241",
+        "regions": 18,
+        "lines": 269,
+        "selected_lines": 66,
+        "seconds": 19.66,
+        "source_url": "https://api.digitale-sammlungen.de/iiif/image/v2/bsb10506594_01241/full/full/0/default.jpg",
+        "source_image_sha256": "e2c7fd5866bb0bc7bed840ba80cfc82f7a8914e32e73ef6223ed738aba2f526b",
+        "prediction_sha256": "0f1328efdeb357fa990d12e710e835e370bc489daa488fc840c22f01e1108c25",
+        "annotation_sha256": "8775d24acb459befba91fd4c66244da50e04add38aab9fd7905bd458cb8e63b6",
+        "source_checks": {
+          "content_bearing": true,
+          "task_layout": true,
+          "description": "Central legal-text columns with surrounding gloss."
+        }
+      },
+      {
+        "key": "bsb10488460/00309",
+        "regions": 19,
+        "lines": 246,
+        "selected_lines": 35,
+        "seconds": 30.51,
+        "source_url": "https://api.digitale-sammlungen.de/iiif/image/v2/bsb10488460_00309/full/full/0/default.jpg",
+        "source_image_sha256": "48d18edd7f0459d8dd4abbbfd9b177adecdad1990fb69521dc714fad4150c116",
+        "prediction_sha256": "6b3100ae52806cbcb3cbf51fb3a212da6f39a79d63f36ff66018650edee10085",
+        "annotation_sha256": "0ea159fafb49f22d1add02a7f448703aece1251e1d0d0a9e127660dc5af1501b",
+        "source_checks": {
+          "content_bearing": true,
+          "task_layout": true,
+          "description": "Central legal-text columns with surrounding gloss."
+        }
+      },
+      {
+        "key": "bsb11198432/00354",
+        "regions": 12,
+        "lines": 245,
+        "selected_lines": 81,
+        "seconds": 27.35,
+        "source_url": "https://api.digitale-sammlungen.de/iiif/image/v2/bsb11198432_00354/full/full/0/default.jpg",
+        "source_image_sha256": "b9f87ee170d28dfb40522362ec9da0ea10ddc843b0dd30617e3ad2a3a797df6a",
+        "prediction_sha256": "6e9193aa33f2dbf787dd43c25c8d2faa9dee4003f5deb87a97d463f456ac131a",
+        "annotation_sha256": "8f6bc822cdacea92b5560bb3de207f4785e91a67426f59fba7c16070a91f5fd4",
+        "source_checks": {
+          "content_bearing": true,
+          "task_layout": true,
+          "description": "Central legal-text columns with surrounding gloss."
+        }
+      },
+      {
+        "key": "bsb10162218/00815",
+        "regions": 18,
+        "lines": 229,
+        "selected_lines": 54,
+        "seconds": 24.24,
+        "source_url": "https://api.digitale-sammlungen.de/iiif/image/v2/bsb10162218_00815/full/full/0/default.jpg",
+        "source_image_sha256": "4268bf7b1dd4254bfc425b19e9ff4492e7e87446301aebe9f2b0425eec1573d9",
+        "prediction_sha256": "37313def5b426b05042ee11c906e383adc6bf2013643037059379576395430c6",
+        "annotation_sha256": "4af200700f713ff4fbc98e20e961b5a186617aa0b35306a3ae5be61e090ae22c",
+        "source_checks": {
+          "content_bearing": true,
+          "task_layout": true,
+          "description": "Central legal-text columns with surrounding gloss."
+        }
+      },
+      {
+        "key": "bsb10488451/00333",
+        "regions": 24,
+        "lines": 330,
+        "selected_lines": 76,
+        "seconds": 34.44,
+        "source_url": "https://api.digitale-sammlungen.de/iiif/image/v2/bsb10488451_00333/full/full/0/default.jpg",
+        "source_image_sha256": "98b49bc9f4b488b951ad3dfd3dfa4cbf4e97124c24605bfaed29c7205afd366e",
+        "prediction_sha256": "7cf9041fd118cf97a808a9f0f5d35fb4bbacc0e61b84f4e6723bff14dcf2f2dc",
+        "annotation_sha256": "c33f6f0eae5b538eda01f06988ca50520d18f7dcb1c12166ef0390485b6e87ec",
+        "source_checks": {
+          "content_bearing": true,
+          "task_layout": true,
+          "description": "Central legal-text columns with surrounding gloss."
+        }
+      },
+      {
+        "key": "bsb11198436/00070",
+        "regions": 18,
+        "lines": 226,
+        "selected_lines": 14,
+        "seconds": 29.72,
+        "source_url": "https://api.digitale-sammlungen.de/iiif/image/v2/bsb11198436_00070/full/full/0/default.jpg",
+        "source_image_sha256": "37dc51b24b2316246605a78e83b90bc700691e0db3f69c917996ea0554e8a9ff",
+        "prediction_sha256": "88d35afd41a8dd07a3129f56f02dfbc46bd2b73bc74ff373fb081280d1fe9338",
+        "annotation_sha256": "6399320f2cce31464160bac9681347f5592c344335a9c2a44f513b8d9d46610a",
+        "source_checks": {
+          "content_bearing": true,
+          "task_layout": true,
+          "description": "Central legal-text columns with surrounding gloss."
+        }
+      },
+      {
+        "key": "bsb10162230/00956",
+        "regions": 15,
+        "lines": 218,
+        "selected_lines": 62,
+        "seconds": 21.47,
+        "source_url": "https://api.digitale-sammlungen.de/iiif/image/v2/bsb10162230_00956/full/full/0/default.jpg",
+        "source_image_sha256": "4185fb8df201e76c07a4c90ebdb768203529ba9b83a97e57cc2efb326f412a44",
+        "prediction_sha256": "e5137417de90d5485350895f242e7bb29f34490f7013ef89c84622b280004fbd",
+        "annotation_sha256": "863155a1a6e2f95c860b87beae2b81b2299c5c39d94cdcf6344a8705d72be318",
+        "source_checks": {
+          "content_bearing": true,
+          "task_layout": true,
+          "description": "Central legal-text columns with surrounding gloss."
+        }
+      },
+      {
+        "key": "bsb10506589/01109",
+        "regions": 21,
+        "lines": 289,
+        "selected_lines": 74,
+        "seconds": 22.82,
+        "source_url": "https://api.digitale-sammlungen.de/iiif/image/v2/bsb10506589_01109/full/full/0/default.jpg",
+        "source_image_sha256": "a1b6755ccea3dd90af8b8040be3401733f274855ecf40fab8ead5e7867f0bb8e",
+        "prediction_sha256": "071d545423723b05d3bd9c6caa276f08459f33b05f94dff55495542ee107c092",
+        "annotation_sha256": "9ad4f63228dfbc21a93fb9a951984b3d90f26381051be9919b93fc31ddc709ee",
+        "source_checks": {
+          "content_bearing": true,
+          "task_layout": true,
+          "description": "Central legal-text columns with surrounding gloss."
+        }
+      }
+    ]
   }
 }
