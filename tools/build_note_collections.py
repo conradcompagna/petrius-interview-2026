@@ -51,8 +51,8 @@ groups = [(["bsb00026118/00051", "bsb00053599/00443"], [("ocr-test100", "Kraken"
 if "stock-models" not in by or True:
     pages = []
     for keys, models in groups:
-        for k in keys:
-            for ds, model in models:
+        for ds, model in models:
+            for k in keys:
                 src = next(p for p in by[ds]["pages"] if p["key"] == k)
                 rec = json.loads(gzip.open(os.path.join(SITE, src["annotation"])).read())
                 key = f"{k}/{model}"
