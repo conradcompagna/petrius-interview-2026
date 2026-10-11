@@ -32,6 +32,12 @@ def hocr_pars(path):
     s = open(path, encoding="utf-8", errors="replace").read()
     return [list(map(int, m.groups())) for m in re.finditer(r"class=['\"]ocr_par['\"][^>]*bbox (\d+) (\d+) (\d+) (\d+)", s)]
 
+def word_found(w):
+    core = w.strip(".,;:()[]!?'\"-—*†¶§/")
+    if len(core) < 4 or not re.fullmatch(r"[A-Za-zÀ-ÿſ]+", core): return None
+    n = measure.norm(core)
+    return n in measure.LEX or ("f" in n and n.replace("f", "s") in measure.LEX)
+
 def line_lex(ws):
     t = h = 0
     for w in ws:
@@ -115,6 +121,7 @@ for hit, book, scan, st in scores:
         bad = t >= 3 and h / t < 0.25
         objs.append(obj(k, "row", "low_lexicon" if bad else "ocr_row", b, text,
                         note=f"{h} of {t} words of 4+ letters found in the lexicon" if t else "", mistake=bad))
+        objs[-1]["lex_words"] = [[w, word_found(w)] for w in ws]
     note = (f"Part B · recognition. {100*hit:.0f}% of {st['tested']} words of four or more letters are found in the legal-Latin lexicon "
             f"(long s read as f repaired); red rows have under 25%.")
     records.append(page(book, scan, size, objs, "B", note, f"out/mdz_ocr_quality/survey5/{book}_{scan:05d}.hocr"))
@@ -126,7 +133,7 @@ idx = json.load(open(idx_path, encoding="utf-8"))
 DSETS = {"A": ("mdz-ocr-regions", "3a · MDZ library OCR · rows crossing regions"),
          "B": ("mdz-ocr-lexicon", "3b · MDZ library OCR · lowest lexicon scores")}
 idx["datasets"] = [d for d in idx["datasets"] if d["id"] not in (DS, "mdz-ocr-regions", "mdz-ocr-lexicon")]
-pos = next((i + 1 for i, d in enumerate(idx["datasets"]) if d["id"] == "legacy-gold-review"), len(idx["datasets"]))
+pos = next((i + 1 for i, d in enumerate(idx["datasets"]) if d["id"] == "parser-transfer"), len(idx["datasets"]))
 for part in "AB":
     dsid, dsname = DSETS[part]; entries = []
     for rec, pp in records:
