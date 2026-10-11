@@ -46,7 +46,7 @@ idx["datasets"] = [d for d in idx["datasets"] if d["id"] != "parser-transfer"]
 idx["datasets"].append(dict(id="parser-transfer", name="", kind="prediction", description="", group="finished", completed_pages=len(pages), pages=pages))
 
 # ---- stock models, grouped by page
-groups = [(["bsb00026118/00051", "bsb00053599/00443"], [("ocr-test100", "Kraken"), ("seg-surya", "Surya"), ("seg-ppocr", "PaddleOCR"), ("seg-ppdoclayout", "PP-DocLayoutV3"), ("seg-qwen3-vl-8b", "Qwen3-VL-8B")]),
+groups = [(["bsb00026118/00051", "bsb00053599/00443"], [("ocr-test100", "Kraken"), ("seg-surya", "Surya"), ("seg-ppocr", "PaddleOCR"), ("seg-ppdoclayout", "PP-DocLayoutV3")]),
           (["bsb00065906/00224", "bsb10488451/00390"], [("seg-pero-random10", "PERO"), ("seg-eynollah-random10", "Eynollah"), ("seg-orli-random10", "Orli")])]
 if "stock-models" not in by or True:
     pages = []
