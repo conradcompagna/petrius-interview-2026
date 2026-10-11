@@ -4,7 +4,7 @@ const $ = id => document.getElementById(id);
 const NS = "http://www.w3.org/2000/svg";
 const colors = {text:"#218450", summarium:"#a038a0", inscriptio:"#ca8007", other:"#657588", main_text:"#218450", gloss:"#3d82bd", marginalia:"#795ac0", header:"#b56d42", footer:"#b56d42", initial:"#d14a50", mixed:"#168e94", uncertain:"#949080", unknown:"#929a90", reject:"#b55243", non_main:"#b55243"};
 const color = label => colors[label] || "#7d8790";
-Object.assign(colors, {source_text:"#218450", heading:"#b56d42", noise:"#b55243", ungrouped:"#e02035", outside:"#8a8f95", text_region:"#168e94", text_line:"#397caf", unassigned:"#cf4553", main_text_block:"#218450", joined_heading:"#ca8007", not_selected:"#8a8f95", cross_region:"#e01b24", low_lexicon:"#e01b24", ocr_row:"#397caf", mdz_paragraph:"#e0a000"});
+Object.assign(colors, {source_text:"#218450", heading:"#b56d42", noise:"#b55243", ungrouped:"#e02035", outside:"#8a8f95", text_region:"#168e94", text_line:"#397caf", unassigned:"#cf4553", main_text_block:"#218450", joined_heading:"#ca8007", not_selected:"#8a8f95", cross_region:"#397caf", low_lexicon:"#397caf", ocr_row:"#397caf", mdz_paragraph:"#e0a000"});
 const nice = str => str === "ocr" ? "OCR text" : String(str || "").replaceAll("_", " ");
 const text = (tag, value, cls) => { const n = document.createElement(tag); n.textContent = value; if (cls) n.className = cls; return n; };
 const svgNode = (tag, attrs = {}) => { const n = document.createElementNS(NS, tag); for (const [k,v] of Object.entries(attrs)) n.setAttribute(k,v); return n; };
