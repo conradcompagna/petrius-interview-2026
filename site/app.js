@@ -181,6 +181,11 @@ function select(pane,id,focus) {
   $("inspect-title").textContent=nice(o.label);
   const detail=$("selection-detail");detail.replaceChildren();
   const field=(k,v)=>{const line=text("div","","detail-meta");line.append(text("strong",k+": "),document.createTextNode(v));detail.append(line);};
+  const badge=text("span",`${nice(o.label)} · ${o.kind}`,"badge");badge.style.setProperty("--role",color(o.label));detail.append(badge);
+  if(o.source_id)field("ID",o.source_id);
+  if(o.subtype)field("Subtype",nice(o.subtype));
+  if(o.parent)field("Parent annotation",o.parent);
+  if(o.bbox)field("Position",o.bbox.map(n=>Math.round(n)).join(", "));
   const m=/^network (\S+)(?: \(([\d.]+)\))? \| reference (\S+)/.exec(o.note||"");
   if(m){field("Predicted",nice(m[1])+(m[2]?` (confidence ${m[2]})`:""));field("Reference",nice(m[3]));}
   if(o.kind==="row"&&/runs across regions/.test(o.note||""))field("Crosses regions",o.note.replace(/^.*regions /,""));
@@ -194,6 +199,7 @@ function select(pane,id,focus) {
   if(typeof o.classification_score==="number")field("Classifier score",o.classification_score.toFixed(3));
   if(typeof o.detection_score==="number")field("Detector score",o.detection_score.toFixed(3));
   if(o.probabilities&&Object.keys(o.probabilities).length)for(const [label,score] of Object.entries(o.probabilities))field(nice(label),typeof score==="number"?score.toFixed(3):String(score));
+  if(o.input_line_refs?.length)field("Source detections",o.input_line_refs.map(r=>`${r.set}:${r.id}`).join(", "));
   if(focus)p.focus(o);Object.values(panes).forEach(p=>p.draw());renderObjectList();
 }
 
