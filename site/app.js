@@ -135,7 +135,7 @@ class PagePane {
       const d=rings.filter(r=>r?.length).map(r=>"M"+r.map(p=>p.join(",")).join("L")+(baselineOnly?"":"Z")).join(" ");
       const path=svgNode("path",{d,fill:baselineOnly?"none":color(o.label),"fill-opacity":o.draft ? .035 : opacity,stroke:color(o.label),"stroke-opacity":o.draft ? .45 : 1,"stroke-width":baselineOnly?1.7:o.kind==="region"?1.7:1.15,"fill-rule":"evenodd","data-object":o.id,class:"geometry"});
       if(baselineOnly){path.setAttribute("vector-effect","non-scaling-stroke");path.setAttribute("pointer-events","stroke");}
-      if(o.draft||!o.counts_as_task_unit)path.setAttribute("stroke-dasharray","4 3");
+      if(o.draft)path.setAttribute("stroke-dasharray","4 3");
       if(state.selected?.pane===this.id&&(state.selected.id===o.id||state.selected.id==="region:"+o.parent))path.classList.add("selected");
       if(o.text){const title=svgNode("title");title.textContent=o.text;path.append(title);}this.layers.append(path);
       if(o.mistake&&state.mistakes!==false){this.layers.append(svgNode("path",{d,fill:"#e01b24","fill-opacity":.28,stroke:"#e01b24","stroke-width":3,"vector-effect":"non-scaling-stroke","fill-rule":"evenodd","pointer-events":"none",class:"mistake"}));}
