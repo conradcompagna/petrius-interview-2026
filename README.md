@@ -1,5 +1,7 @@
 # Historical Latin Document Analysis interview submission
 
+I first completed Task I with a gradient-boosted tree classifier, which I thought had the best chance of generalizing to the wider project without training a neural network. It did not, so I have submitted two things: a simpler parser for the two assigned pages and a fully functional neural pipeline for the task book and other MDZ books with the same layout of central legal text, summaries and inscriptions. The pipeline combines a fine-tuned D-FINE region detector, PERO line detection and OCR, and a multistage, multimodal transformer model that encodes image and text inputs, identifies the central regions and classifies their lines according to the task taxonomy. Both models used annotation datasets covering 120 pages, synthetically generated and then manually reviewed and corrected. The pipeline resembles what I would use in the research project, though smaller and targeted to this layout. This repository contains the code, [trained weights](https://github.com/conradcompagna/historical-latin-document-analysis/releases/download/interview-2026-10-07/assets-models-01.zip), and a [viewer](https://conradcompagna.github.io/historical-latin-document-analysis/) for inspecting the datasets discussed in [my note](docs/Notenew.docx).
+
 | Folder | Contents |
 |---|---|
 | `task1_min/` | Task I parser, reference labels and evaluation results |
@@ -9,8 +11,6 @@
 | `tools/` | Model downloader and site validator |
 | `docs/` | Submission note, model manifest, image sources and verification records |
 | `.github/workflows/` | Viewer deployment |
-
-The Task I submission includes the requested algorithm-based parser and its evaluation. The neural pipeline runs D-FINE region detection, PERO line detection and OCR, and neural classification on other pages with the same layout. [Trained weights](https://github.com/conradcompagna/historical-latin-document-analysis/releases/download/interview-2026-10-07/assets-models-01.zip) are provided separately. The viewer shows the datasets behind [Notenew.docx](docs/Notenew.docx).
 
 ## [Open the viewer](https://conradcompagna.github.io/historical-latin-document-analysis/)
 
