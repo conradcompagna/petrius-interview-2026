@@ -32,7 +32,7 @@ function displayNote(value) {
 }
 function allowedDatasets() { return state.index.datasets.filter(d => d.pages.length); }
 function outputName(d) { return d.name; }
-function visibleObject(o) { return state.overlays && $("layer-" + o.kind)?.checked && (!state.role || o.label === state.role); }
+function visibleObject(o) { return !(gothicView()&&o.kind==="region") && state.overlays && $("layer-" + o.kind)?.checked && (!state.role || o.label === state.role); }
 function saveURL() { history.replaceState(null, "", "#" + new URLSearchParams({mode:state.mode, dataset:state.dataset, page:state.key, reference:state.ref, view:state.pageView})); }
 class PagePane {
   constructor(id) { this.id=id; this.host=$("view-"+id); this.page=null; this.svg=null; this.box=null; }
@@ -45,7 +45,7 @@ class PagePane {
     this.page=page; this.host.replaceChildren(); this.host.classList.add("loading");
     $("name-"+this.id).textContent=dataset(page.dataset)?.name||page.dataset_name;
     const counts = {};
-    for (const o of page.objects) if (o.kind !== "draft") counts[o.kind]=(counts[o.kind]||0)+1;
+    for (const o of page.objects) if (o.kind !== "draft" && !(gothicView()&&o.kind==="region")) counts[o.kind]=(counts[o.kind]||0)+1;
     $("status-"+this.id).textContent=page.pending?"Processing pending — source scan available":Object.entries(counts).map(([k,n])=>`${n} ${k}${n===1?"":"s"}`).join(" · ") || (["ocr","segmentation"].includes(page.kind)?"No text detections":"No saved annotations");
     $("status-"+this.id).title="";
     this.svg=svgNode("svg", {role:"img", "aria-label":`${gothicView()?dataset(page.dataset).name:page.dataset_name}, ${page.book}, scan ${page.scan}`, preserveAspectRatio:"xMidYMid meet"});
@@ -100,7 +100,7 @@ class PagePane {
     this.layers.replaceChildren();
     if(!this.page)return;
     const opacity=Number($("opacity").value)/100;
-    const heatLayer=gothicView()?svgNode("g",{opacity,class:"row-heatmap"}):null;
+    const heatLayer=gothicView()?svgNode("g",{opacity:Math.sqrt(Number($("opacity").value)/Number($("opacity").max)),class:"row-heatmap"}):null;
     if(heatLayer)heatLayer.style.mixBlendMode="multiply";
     // Keep spans and initials above rows. Within each layer, draw excluded
     // detections first: overlapping outside duplicates must not intercept clicks
@@ -224,6 +224,7 @@ function renderCollection() {
   $("dataset").replaceChildren(...available.map(d=>new Option(`${outputName(d)} · ${d.pages.length}`,d.id)));
   $("dataset").value=state.dataset;state.mode=dataset().group==="finished"?"finished":"archive";
   document.body.classList.toggle("gothic-view",gothicView());
+  $("layer-region").parentElement.hidden=gothicView();
   renderPages();
 }
 async function selectOutput(id) {
