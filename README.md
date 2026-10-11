@@ -2,7 +2,7 @@
 
 Conrad Compagna · October 2026
 
-[Open the results viewer](https://conradcompagna.github.io/historical-latin-document-analysis/) · [Task I note](docs/task1_note.pdf) · [Download model weights (490 MB)](https://github.com/conradcompagna/historical-latin-document-analysis/releases/download/interview-2026-10-07/assets-models-01.zip)
+[Open the results viewer](https://conradcompagna.github.io/historical-latin-document-analysis/) · [Task I note](docs/Notenew.docx) · [Download model weights (490 MB)](https://github.com/conradcompagna/historical-latin-document-analysis/releases/download/interview-2026-10-07/assets-models-01.zip)
 
 ## Repository
 
@@ -12,7 +12,7 @@ Conrad Compagna · October 2026
 | `inference/` | D-FINE regions → PERO lines and OCR → trained region and line taggers, with a pinned CPU environment |
 | `site/` | The results viewer, used both locally and on GitHub Pages; 11 collections and 632 page records |
 | `tools/` | Model archive creation, download and verification; static site validation |
-| `docs/` | The two-page Task I note, verification records, model download manifest and image-rights inventory |
+| `docs/` | The current Task I note, verification records, model download manifest and image-rights inventory |
 | `inference/licenses/` | Third-party licences |
 
 ## Run inference on your own pages
