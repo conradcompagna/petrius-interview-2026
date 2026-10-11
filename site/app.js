@@ -63,7 +63,7 @@ class PagePane {
   }
   show(page) {
     this.page=page; this.host.replaceChildren(); this.host.classList.add("loading");
-    $("name-"+this.id).textContent=page.dataset_name;
+    $("name-"+this.id).textContent=dataset(page.dataset)?.name||page.dataset_name;
     const counts = {};
     for (const o of page.objects) if (o.kind !== "draft") counts[o.kind]=(counts[o.kind]||0)+1;
     $("status-"+this.id).textContent=page.pending?"Processing pending — source scan available":Object.entries(counts).map(([k,n])=>`${n} ${k}${n===1?"":"s"}`).join(" · ") || (["ocr","segmentation"].includes(page.kind)?"No text detections":"No saved annotations");
@@ -180,29 +180,20 @@ function select(pane,id,focus) {
   activate(pane);state.selected={pane,id};document.querySelector(".inspector").classList.add("has-selection");
   $("inspect-title").textContent=nice(o.label);
   const detail=$("selection-detail");detail.replaceChildren();
-  const badge=text("span",`${nice(o.label)} · ${o.kind}`,"badge");badge.style.setProperty("--role",color(o.label));detail.append(badge);
-  const meta=text("div","","detail-meta");
-  const fields=[ ["ID",o.source_id], ["Subtype",nice(o.subtype)], ["Parent annotation",o.parent], ["Position",o.bbox.map(n=>Math.round(n)).join(", ")]];
-  for(const [label,value] of fields)if(value){const line=text("div","");line.append(text("strong",label+": "),document.createTextNode(value));meta.append(line);}detail.append(meta);
-  if(o.draft)detail.append(text("p","Draft line geometry","detail-note"));
-  if(!o.counts_as_task_unit)detail.append(text("p","Context fragment: excluded from the task-unit count in this source.","detail-note"));
-  detail.append(text("div",o.text||"No transcription is stored for this annotation.",o.text?"detail-text":"detail-note"));
-  if(o.kind==="span"&&!o.text&&o.parent)detail.append(text("p","The parent row may contain OCR text. This span has no separately assigned text.","detail-note"));
-  const note=displayNote(o.note);if(note)detail.append(text("p",note,"detail-note"));
-  if(o.input_line_refs?.length)detail.append(text("p","Source detections: "+o.input_line_refs.map(r=>`${r.set}:${r.id}`).join(", "),"detail-note"));
-  if(typeof o.ocr_confidence==="number")detail.append(text("p",`OCR score: ${o.ocr_confidence.toFixed(3)}`,"detail-note"));
-  if(typeof o.classification_score==="number")detail.append(text("p",`Classifier score: ${o.classification_score.toFixed(3)}`,"detail-note"));
-  if(typeof o.detection_score==="number")detail.append(text("p",`Detector score: ${o.detection_score.toFixed(3)}`,"detail-note"));
-  if(o.probabilities&&Object.keys(o.probabilities).length){
-    detail.append(text("p","Model scores","detail-note"));
-    for(const [label,score] of Object.entries(o.probabilities)){const row=text("div","","prob-row");row.append(text("span",nice(label)),text("span",typeof score==="number"?score.toFixed(3):String(score)));detail.append(row);}
-  }
-  detail.append(text("div",o.source,"detail-source"));
-  const actions=text("div","","detail-actions");const zoom=text("button","Zoom to annotation");zoom.onclick=()=>p.focus(o);actions.append(zoom);
-  if(o.parent&&p.page.objects.some(item=>item.id==="region:"+o.parent)){
-    const group=text("button","Show whole group");group.onclick=()=>select(pane,"region:"+o.parent,false);actions.append(group);
-  }
-  const close=text("button","Clear");close.onclick=clearSelection;actions.append(close);detail.append(actions);
+  const field=(k,v)=>{const line=text("div","","detail-meta");line.append(text("strong",k+": "),document.createTextNode(v));detail.append(line);};
+  const m=/^network (\S+)(?: \(([\d.]+)\))? \| reference (\S+)/.exec(o.note||"");
+  if(m){field("Predicted",nice(m[1])+(m[2]?` (confidence ${m[2]})`:""));field("Reference",nice(m[3]));}
+  if(o.kind==="row"&&/runs across regions/.test(o.note||""))field("Crosses regions",o.note.replace(/^.*regions /,""));
+  if(o.lex_words?.length){
+    const n=o.lex_words.filter(w=>w[1]===true).length,t=o.lex_words.filter(w=>w[1]!==null).length;field("Words in lexicon",`${n} of ${t}`);
+    const box=text("div","","detail-text");
+    o.lex_words.forEach(([w,found],i)=>{if(i)box.append(" ");const s=text("span",w);if(found===false){s.style.background="#f6c8c8";s.style.color="#9b1c1c";}else if(found===true){s.style.background="#d3eedc";}box.append(s);});
+    detail.append(box);
+  }else if(o.text)detail.append(text("div",o.text,"detail-text"));
+  if(typeof o.ocr_confidence==="number")field("OCR score",o.ocr_confidence.toFixed(3));
+  if(typeof o.classification_score==="number")field("Classifier score",o.classification_score.toFixed(3));
+  if(typeof o.detection_score==="number")field("Detector score",o.detection_score.toFixed(3));
+  if(o.probabilities&&Object.keys(o.probabilities).length)for(const [label,score] of Object.entries(o.probabilities))field(nice(label),typeof score==="number"?score.toFixed(3):String(score));
   if(focus)p.focus(o);Object.values(panes).forEach(p=>p.draw());renderObjectList();
 }
 
