@@ -5,7 +5,7 @@ const NS = "http://www.w3.org/2000/svg";
 const colors = {text:"#218450", summarium:"#a038a0", inscriptio:"#ca8007", other:"#657588", main_text:"#218450", gloss:"#3d82bd", marginalia:"#795ac0", header:"#b56d42", footer:"#b56d42", initial:"#d14a50", mixed:"#168e94", uncertain:"#949080", unknown:"#929a90", reject:"#b55243", non_main:"#b55243"};
 const color = label => colors[label] || "#7d8790";
 Object.assign(colors, {source_text:"#218450", heading:"#b56d42", noise:"#b55243", ungrouped:"#e02035", outside:"#8a8f95", text_region:"#168e94", text_line:"#397caf", unassigned:"#cf4553", main_text_block:"#218450", joined_heading:"#ca8007", not_selected:"#8a8f95", cross_region:"#397caf", low_lexicon:"#397caf", ocr_row:"#397caf", mdz_paragraph:"#168e94", annotated_region:"#168e94"});
-const nice = str => ["low_lexicon","ocr_row"].includes(str) ? "OCR row" : str === "ocr" ? "OCR text" : String(str || "").replaceAll("_", " ");
+const nice = str => str === "ocr" ? "OCR text" : String(str || "").replaceAll("_", " ");
 const text = (tag, value, cls) => { const n = document.createElement(tag); n.textContent = value; if (cls) n.className = cls; return n; };
 const svgNode = (tag, attrs = {}) => { const n = document.createElementNS(NS, tag); for (const [k,v] of Object.entries(attrs)) n.setAttribute(k,v); return n; };
 function apiURL(route, collection, key) {
@@ -21,7 +21,7 @@ async function readJSON(url) {
   const body=bytes[0]===31&&bytes[1]===139?await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"))).text():new TextDecoder().decode(bytes);
   return JSON.parse(body);
 }
-const state = {index:null, mode:"finished", dataset:"finished-interview", key:"", ref:"auto", pageView:"single", role:null, overlays:true, active:"a", selected:null, serial:0, filtered:[]};
+const state = {fmt:"flags", index:null, mode:"finished", dataset:"finished-interview", key:"", ref:"auto", pageView:"single", role:null, overlays:true, active:"a", selected:null, serial:0, filtered:[]};
 const panes = {};
 let toastTimer;
 function toast(message) { $("toast").textContent = message; $("toast").style.display = "block"; clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").style.display = "none", 2600); }
@@ -48,7 +48,7 @@ class PagePane {
     for (const o of page.objects) if (o.kind !== "draft") counts[o.kind]=(counts[o.kind]||0)+1;
     $("status-"+this.id).textContent=page.pending?"Processing pending — source scan available":Object.entries(counts).map(([k,n])=>`${n} ${k}${n===1?"":"s"}`).join(" · ") || (["ocr","segmentation"].includes(page.kind)?"No text detections":"No saved annotations");
     $("status-"+this.id).title="";
-    this.svg=svgNode("svg", {role:"img", "aria-label":`${dataset(page.dataset)?.name||page.dataset_name}, ${page.book}, scan ${page.scan}`, preserveAspectRatio:"xMidYMid meet"});
+    this.svg=svgNode("svg", {role:"img", "aria-label":`${gothicView()?dataset(page.dataset).name:page.dataset_name}, ${page.book}, scan ${page.scan}`, preserveAspectRatio:"xMidYMid meet"});
     const img=svgNode("image", {href:apiURL("/image",page.dataset,page.key),width:page.image.width,height:page.image.height});
     img.addEventListener("load",()=>this.host.classList.remove("loading"));
     img.addEventListener("error",()=> {this.host.classList.remove("loading"); toast("The source scan could not be loaded.");});
@@ -78,7 +78,7 @@ class PagePane {
   fit(sync=true) { if(this.page)this.setBox([0,0,this.page.image.width,this.page.image.height],sync); }
   setBox(box,sync=true) {
     if(!this.svg)return; this.box=box;this.svg.setAttribute("viewBox",box.join(" "));
-    this.svg.style.setProperty("--heat-stroke-width",Math.min(1,.25*Math.sqrt(this.page.image.width/box[2]))+"px");
+    if(gothicView())this.svg.style.setProperty("--heat-stroke-width",Math.min(1,.25*Math.sqrt(this.page.image.width/box[2]))+"px");
     if(this.id===state.active)$("zoom-value").textContent=Math.round(this.page.image.width/box[2]*100)+"%";
 
   }
@@ -111,10 +111,11 @@ class PagePane {
       const baselineOnly=o.geometry_type==="baseline";
       const rings=baselineOnly ? [o.baseline] : o.components?.length ? o.components.flatMap(c=>[c.polygon,...(c.holes||[])]) : [o.polygon,...(o.holes||[])];
       const d=rings.filter(r=>r?.length).map(r=>"M"+r.map(p=>p.join(",")).join("L")+(baselineOnly?"":"Z")).join(" ");
-      const lm=surpriseView(),sv=lm&&o.kind==="row",hc=sv&&typeof o.surprise_bpc==="number"?heat((o.surprise_bpc-2)/3):null;
-      const path=svgNode("path",{d,fill:baselineOnly?"none":lm?(hc||"none"):color(o.label),"fill-opacity":lm?Math.min(.12,opacity):o.draft ? .035 : opacity,stroke:lm?(hc||"#87948c"):color(o.label),"stroke-opacity":lm?(sv ? .8 : .25):o.draft ? .45 : 1,"stroke-width":lm?1:baselineOnly?1.7:o.kind==="region"?1.7:1.15,"fill-rule":"evenodd","data-object":o.id,class:"geometry"+(sv?" surprise-row":"")});
+      const sv=surpriseView()&&o.kind==="row",hc=sv&&typeof o.surprise_bpc==="number"?heat((o.surprise_bpc-2)/3):null;
+      const lm=gothicView();
+      const path=lm?svgNode("path",{d,fill:baselineOnly?"none":lm?(hc||"none"):color(o.label),"fill-opacity":lm?Math.min(.12,opacity):o.draft ? .035 : opacity,stroke:lm?(hc||"#87948c"):color(o.label),"stroke-opacity":lm?(sv ? .8 : .25):o.draft ? .45 : 1,"stroke-width":lm?1:baselineOnly?1.7:o.kind==="region"?1.7:1.15,"fill-rule":"evenodd","data-object":o.id,class:"geometry"+(sv?" surprise-row":"")}):svgNode("path",{d,fill:baselineOnly?"none":sv?(hc||"none"):color(o.label),"fill-opacity":sv?Math.min(.8,opacity*3+.1):o.draft ? .035 : opacity,stroke:sv?(hc||"#9aa0a6"):color(o.label),"stroke-opacity":o.draft ? .45 : 1,"stroke-width":baselineOnly?1.7:o.kind==="region"?1.7:1.15,"fill-rule":"evenodd","data-object":o.id,class:"geometry"});
+      if(lm&&sv&&!baselineOnly)path.setAttribute("pointer-events","all");
       if(baselineOnly){path.setAttribute("vector-effect","non-scaling-stroke");path.setAttribute("pointer-events","stroke");}
-      if(sv&&!baselineOnly)path.setAttribute("pointer-events","all");
       if(o.draft)path.setAttribute("stroke-dasharray","4 3");
       if(state.selected?.pane===this.id&&(state.selected.id===o.id||state.selected.id==="region:"+o.parent))path.classList.add("selected");
       if(o.text){const title=svgNode("title");title.textContent=o.text;path.append(title);}this.layers.append(path);
@@ -135,20 +136,22 @@ function activate(id) {
 
 }
 const hasSurprise=()=>Object.values(panes).some(p=>p.page?.objects.some(o=>typeof o.surprise_bpc==="number"));
-const surpriseView=()=>hasSurprise();
+const gothicView=()=>state.dataset==="mdz-ocr-lexicon";
+const surpriseView=()=>hasSurprise()&&(gothicView()||state.fmt==="surprise");
+function paleHeat(t){return heat(t).replace(/\d+/g,v=>Math.round(255+(Number(v)-255)*.18));}
 function heat(t){
   const stops=[[0,[255,247,214]],[0.33,[253,187,99]],[0.66,[232,69,44]],[1,[122,12,12]]];t=Math.max(0,Math.min(1,t));
   for(let i=1;i<stops.length;i++)if(t<=stops[i][0]){const [a,ca]=stops[i-1],[b,cb]=stops[i],f=(t-a)/(b-a);return "rgb("+ca.map((v,k)=>Math.round(v+(cb[k]-v)*f)).join(",")+")";}
   return "rgb(122,12,12)";
 }
-function paleHeat(t){return heat(t).replace(/\d+/g,v=>Math.round(255+(Number(v)-255)*.18));}
 function renderSurpriseKey(){
   const k=$("surprise-key");k.hidden=!surpriseView();if(k.hidden)return;
   const bar=document.createElement("span");bar.style.cssText="display:inline-block;width:180px;height:10px;vertical-align:middle;margin:0 8px;border-radius:2px;background:linear-gradient(to right,"+[0,0.33,0.66,1].map(heat).join(",")+")";
-  k.replaceChildren(text("strong","Language-model surprise"),text("span","2 bits/char · lower"),bar,text("span","5+ · higher"));
+  if(gothicView())k.replaceChildren(text("strong","Language-model surprise"),text("span","2 bits/char · lower"),bar,text("span","5+ · higher"));
+  else k.replaceChildren(text("span","2 bits/char · reads like ordinary Latin"),bar,text("span","5+ · unlike ordinary Latin"));
 }
 function renderLegend() {
-  if(surpriseView()){$("legend").replaceChildren();state.role=null;return;}
+  if(gothicView()){$("legend").replaceChildren();state.role=null;return;}
   const labels=new Map();
   for(const p of Object.values(panes))if(p.page&&!$("pane-"+p.id).hidden)for(const o of p.page.objects)if($("layer-"+o.kind)?.checked)labels.set(o.label,(labels.get(o.label)||0)+1);
   $("legend").replaceChildren();
@@ -159,7 +162,7 @@ function renderLegend() {
   }
   if(!labels.size)$("legend").append(text("span","No annotations in the enabled layers", "legend-empty"));
 }
-function redraw() {const slider=$("opacity");slider.max=surpriseView()?"12":"50";renderSurpriseKey();renderLegend();Object.values(panes).forEach(p=>p.draw());updateMistakes();}
+function redraw() {$("output-format").hidden=gothicView()||!hasSurprise();$("opacity").max=gothicView()?"12":"50";renderSurpriseKey();renderLegend();Object.values(panes).forEach(p=>p.draw());updateMistakes();}
 function updateMistakes() {
   const objs=Object.values(panes).flatMap(p=>p.page?.objects||[]),flagged=objs.filter(o=>o.mistake!==null&&o.mistake!==undefined),n=flagged.filter(o=>o.mistake).length,nr=flagged.filter(o=>o.mistake&&o.kind==="region").length,b=$("mistakes");if(b&&surpriseView()){b.hidden=true;return;}
   if(!b)return;b.hidden=!flagged.length;b.textContent=(state.mistakes===false?"Show mistakes":"Hide mistakes")+" ("+(n-nr)+" lines, "+nr+" regions)";b.style.color=n?"#e01b24":"";
@@ -171,10 +174,11 @@ function clearSelection() {
 function select(pane,id,focus) {
   const p=panes[pane],o=p.page.objects.find(item=>item.id===id);if(!o)return;
   activate(pane);state.selected={pane,id};document.querySelector(".inspector").classList.add("has-selection");
-  $("inspect-title").textContent=nice(o.label);
+  const inspectedLabel=gothicView()&&o.kind==="row"?"OCR row":nice(o.label);
+  $("inspect-title").textContent=inspectedLabel;
   const detail=$("selection-detail");detail.replaceChildren();
   const field=(k,v)=>{const line=text("div","","detail-meta");line.append(text("strong",k+": "),document.createTextNode(v));detail.append(line);};
-  const badge=text("span",`${nice(o.label)} · ${o.kind}`,"badge");badge.style.setProperty("--role",color(o.label));detail.append(badge);
+  const badge=text("span",`${inspectedLabel} · ${o.kind}`,"badge");badge.style.setProperty("--role",color(o.label));detail.append(badge);
   if(o.source_id)field("ID",o.source_id);
   if(o.subtype)field("Subtype",nice(o.subtype));
   if(o.parent)field("Parent annotation",o.parent);
@@ -184,6 +188,7 @@ function select(pane,id,focus) {
   if(o.kind==="row"&&/runs across regions/.test(o.note||""))field("Crosses regions",o.note.replace(/^.*regions /,""));
   if(surpriseView()&&o.char_bits){
     if(typeof o.surprise_bpc==="number")field("Surprise",o.surprise_bpc.toFixed(2)+" bits per character");
+    if(gothicView()){
     const box=text("div","","detail-text char-heat");
     let i=0;
     for(const part of o.text.match(/\S+|\s+/gu)||[]){
@@ -191,6 +196,16 @@ function select(pane,id,focus) {
       for(const c of part){const s=text("span",c,"heat-char"),b=o.char_bits[i++];if(typeof b==="number"&&/\S/u.test(c)){s.style.backgroundColor=paleHeat((b-1)/7);s.title=b.toFixed(1)+" bits per character";if(b>=5)s.style.boxShadow=`inset 0 -2px ${heat((b-1)/7)}`;}word.append(s);}box.append(word);
     }
     detail.append(box,text("div","Darker underline = higher character surprise. Hover a letter for its score.","detail-note"));
+    }else{
+    const box=text("div","","detail-text");
+    [...o.text].forEach((c,i)=>{const s=text("span",c),b=o.char_bits[i];if(typeof b==="number"){s.style.background=heat((b-1)/7);s.title=b.toFixed(1)+" bits";if(b>5)s.style.color="#fff";}box.append(s);});
+    detail.append(box);
+    }
+  }else if(!gothicView()&&o.lex_words?.length){
+    const n=o.lex_words.filter(w=>w[1]===true).length,t=o.lex_words.filter(w=>w[1]!==null).length;field("Words in lexicon",`${n} of ${t}`);
+    const box=text("div","","detail-text");
+    o.lex_words.forEach(([w,found],i)=>{if(i)box.append(" ");const s=text("span",w);if(found===false){s.style.background="#f6c8c8";s.style.color="#9b1c1c";}else if(found===true){s.style.background="#d3eedc";}box.append(s);});
+    detail.append(box);
   }else if(o.text)detail.append(text("div",o.text,"detail-text"));
   if(typeof o.ocr_confidence==="number")field("OCR score",o.ocr_confidence.toFixed(3));
   if(typeof o.classification_score==="number")field("Classifier score",o.classification_score.toFixed(3));
@@ -206,6 +221,8 @@ function renderCollection() {
   if(!available.some(d=>d.id===state.dataset))state.dataset=available[0].id;
   $("dataset").replaceChildren(...available.map(d=>new Option(`${outputName(d)} · ${d.pages.length}`,d.id)));
   $("dataset").value=state.dataset;state.mode=dataset().group==="finished"?"finished":"archive";
+  document.body.classList.toggle("gothic-view",gothicView());
+  $("opacity").max=gothicView()?"12":"50";$("opacity").value=gothicView()?"8":"12";
   renderPages();
 }
 async function selectOutput(id) {
@@ -223,7 +240,7 @@ function renderPages() {
   const fragment=document.createDocumentFragment();
   for(const p of state.filtered){
     const b=text("button","","page-card"+(p.key===state.key?" active":""));b.dataset.key=p.key;
-    const head=text("span","","scan");head.append(text("span",`${p.display_id?p.display_id+" · ":""}Scan ${String(p.scan).padStart(5,"0")}`),text("span",typeof p.surprise_bpc==="number"?p.surprise_bpc.toFixed(2)+" bits/char":["ocr","segmentation"].includes(dataset().kind)?"":p.semantic_units?`${p.semantic_units} units`:p.split,"dot-count"));
+    const head=text("span","","scan");head.append(text("span",`${p.display_id?p.display_id+" · ":""}Scan ${String(p.scan).padStart(5,"0")}`),text("span",(gothicView()||state.fmt==="surprise")&&typeof p.surprise_bpc==="number"?p.surprise_bpc.toFixed(2)+" bits/char":["ocr","segmentation"].includes(dataset().kind)?"":p.semantic_units?`${p.semantic_units} units`:p.split,"dot-count"));
     b.append(head,text("span",p.book,"book-id"),text("span",p.title,"book-title"));b.title=p.title;b.onclick=()=>loadPage(p.key);fragment.append(b);
   }
   $("page-list").replaceChildren(fragment);
@@ -273,6 +290,8 @@ async function init() {
     for(const input of document.querySelectorAll(".layer-controls input"))input.onchange=redraw;
     $("opacity").oninput=()=>Object.values(panes).forEach(p=>p.draw());
     $("overlays").onclick=()=>{state.overlays=!state.overlays;$("overlays").textContent=state.overlays?"Hide overlays":"Show overlays";redraw();};
+    try{const f=localStorage.getItem("viewer-fmt");if(f==="surprise"||f==="flags")state.fmt=f;}catch(e){}
+    for(const r of document.querySelectorAll('input[name="fmt"]')){r.checked=r.value===state.fmt;r.onchange=()=>{state.fmt=r.value;try{localStorage.setItem("viewer-fmt",state.fmt);}catch(e){}renderPages();redraw();if(state.selected)select(state.selected.pane,state.selected.id,false);};}
     $("mistakes").onclick=()=>{state.mistakes=state.mistakes===false;redraw();};
     $("fit").onclick=()=>panes[state.active].fit();$("zoom-in").onclick=()=>panes[state.active].zoom(1.4);$("zoom-out").onclick=()=>panes[state.active].zoom(1/1.4);
     $("expand").onclick=()=>{const expanded=document.body.classList.toggle("focus-view");$("expand").textContent=expanded?"Restore panels":"Expand";};
