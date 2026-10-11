@@ -83,12 +83,8 @@ for d in study[:50]:
     ann = json.load(open(os.path.join(ROOT, "out", "original_region_annotations120_v1", d["partition"], book, f"{scan:05d}.json"), encoding="utf-8"))
     fx, fy = size[0] / ann["image"]["width"], size[1] / ann["image"]["height"]
     objs = []
-    for k, r in enumerate(ann["regions"]):
-        sp = [[x * fx, y * fy] for x, y in r["polygon"]]
-        xs, ys = [q[0] for q in sp], [q[1] for q in sp]
-        objs.append(obj(k, "region", "annotated_region", [min(xs), min(ys), max(xs), max(ys)], note=f"annotated region {r['id']}", poly=sp + [sp[0]]))
     for k, pb in enumerate(hocr_pars(hp)):
-        objs.append(obj(1000 + k, "paragraph", "mdz_paragraph", pb, note="MDZ hOCR paragraph"))
+        objs.append(obj(1000 + k, "region", "mdz_paragraph", pb, note="MDZ hOCR paragraph"))
     flagged = {tuple(int(v) for v in f["bbox"]): f for f in d["row_flags"]}
     for k, (bb, text, ws) in enumerate(lines):
         f = flagged.get(tuple(bb))
@@ -115,7 +111,7 @@ for hit, book, scan, st in scores:
     if perbook[book] == 2 or (book, scan) in seen: continue
     perbook[book] += 1; nB += 1
     size, lines = hocr_lines(os.path.join(sv, f"{book}_{scan:05d}.hocr"))
-    objs = [obj(1000 + k, "paragraph", "mdz_paragraph", pb, note="MDZ hOCR paragraph") for k, pb in enumerate(hocr_pars(os.path.join(sv, f"{book}_{scan:05d}.hocr")))]
+    objs = [obj(1000 + k, "region", "mdz_paragraph", pb, note="MDZ hOCR paragraph") for k, pb in enumerate(hocr_pars(os.path.join(sv, f"{book}_{scan:05d}.hocr")))]
     for k, (b, text, ws) in enumerate(lines):
         t, h = line_lex(ws)
         bad = t >= 3 and h / t < 0.25
