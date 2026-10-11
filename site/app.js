@@ -21,7 +21,7 @@ async function readJSON(url) {
   const body=bytes[0]===31&&bytes[1]===139?await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"))).text():new TextDecoder().decode(bytes);
   return JSON.parse(body);
 }
-const state = {index:null, mode:"finished", dataset:"finished-interview", key:"", ref:"auto", pageView:"single", role:null, overlays:true, active:"a", selected:null, serial:0, filtered:[]};
+const state = {fmt:"flags", index:null, mode:"finished", dataset:"finished-interview", key:"", ref:"auto", pageView:"single", role:null, overlays:true, active:"a", selected:null, serial:0, filtered:[]};
 const panes = {};
 let toastTimer;
 function toast(message) { $("toast").textContent = message; $("toast").style.display = "block"; clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").style.display = "none", 2600); }
@@ -110,12 +110,13 @@ class PagePane {
       const baselineOnly=o.geometry_type==="baseline";
       const rings=baselineOnly ? [o.baseline] : o.components?.length ? o.components.flatMap(c=>[c.polygon,...(c.holes||[])]) : [o.polygon,...(o.holes||[])];
       const d=rings.filter(r=>r?.length).map(r=>"M"+r.map(p=>p.join(",")).join("L")+(baselineOnly?"":"Z")).join(" ");
-      const path=svgNode("path",{d,fill:baselineOnly?"none":color(o.label),"fill-opacity":o.draft ? .035 : opacity,stroke:color(o.label),"stroke-opacity":o.draft ? .45 : 1,"stroke-width":baselineOnly?1.7:o.kind==="region"?1.7:1.15,"fill-rule":"evenodd","data-object":o.id,class:"geometry"});
+      const sv=surpriseView()&&o.kind==="row",hc=sv&&typeof o.surprise_bpc==="number"?heat((o.surprise_bpc-2)/3):null;
+      const path=svgNode("path",{d,fill:baselineOnly?"none":sv?(hc||"none"):color(o.label),"fill-opacity":sv?Math.min(.8,opacity*3+.1):o.draft ? .035 : opacity,stroke:sv?(hc||"#9aa0a6"):color(o.label),"stroke-opacity":o.draft ? .45 : 1,"stroke-width":baselineOnly?1.7:o.kind==="region"?1.7:1.15,"fill-rule":"evenodd","data-object":o.id,class:"geometry"});
       if(baselineOnly){path.setAttribute("vector-effect","non-scaling-stroke");path.setAttribute("pointer-events","stroke");}
       if(o.draft)path.setAttribute("stroke-dasharray","4 3");
       if(state.selected?.pane===this.id&&(state.selected.id===o.id||state.selected.id==="region:"+o.parent))path.classList.add("selected");
       if(o.text){const title=svgNode("title");title.textContent=o.text;path.append(title);}this.layers.append(path);
-      if(o.mistake&&state.mistakes!==false){this.layers.append(svgNode("path",{d,fill:"#e01b24","fill-opacity":.28,stroke:"#e01b24","stroke-width":3,"vector-effect":"non-scaling-stroke","fill-rule":"evenodd","pointer-events":"none",class:"mistake"}));}
+      if(o.mistake&&state.mistakes!==false&&!surpriseView()){this.layers.append(svgNode("path",{d,fill:"#e01b24","fill-opacity":.28,stroke:"#e01b24","stroke-width":3,"vector-effect":"non-scaling-stroke","fill-rule":"evenodd","pointer-events":"none",class:"mistake"}));}
       if(!baselineOnly&&false&&o.baseline?.length)this.layers.append(svgNode("polyline",{points:o.baseline.map(p=>p.join(",")).join(" "),fill:"none",stroke:color(o.label),"stroke-width":1.2,"vector-effect":"non-scaling-stroke","pointer-events":"none"}));
       if(false&&o.reading_order!==null&&o.reading_order!==undefined){
         const order=svgNode("text",{x:o.bbox[0],y:o.bbox[1]-4,fill:color(o.label),"font-size":19,"font-weight":700,stroke:"white","stroke-width":3,"paint-order":"stroke","pointer-events":"none"});order.textContent=o.reading_order;this.layers.append(order);
@@ -131,6 +132,18 @@ function activate(id) {
   $("zoom-value").textContent=panes[id].box?Math.round(panes[id].page.image.width/panes[id].box[2]*100)+"%":"100%";
 
 }
+const hasSurprise=()=>Object.values(panes).some(p=>p.page?.objects.some(o=>typeof o.surprise_bpc==="number"));
+const surpriseView=()=>state.fmt==="surprise"&&hasSurprise();
+function heat(t){
+  const stops=[[0,[255,247,214]],[0.33,[253,187,99]],[0.66,[232,69,44]],[1,[122,12,12]]];t=Math.max(0,Math.min(1,t));
+  for(let i=1;i<stops.length;i++)if(t<=stops[i][0]){const [a,ca]=stops[i-1],[b,cb]=stops[i],f=(t-a)/(b-a);return "rgb("+ca.map((v,k)=>Math.round(v+(cb[k]-v)*f)).join(",")+")";}
+  return "rgb(122,12,12)";
+}
+function renderSurpriseKey(){
+  const k=$("surprise-key");k.hidden=!surpriseView();if(k.hidden)return;
+  const bar=document.createElement("span");bar.style.cssText="display:inline-block;width:180px;height:10px;vertical-align:middle;margin:0 8px;border-radius:2px;background:linear-gradient(to right,"+[0,0.33,0.66,1].map(heat).join(",")+")";
+  k.replaceChildren(text("span","2 bits/char · reads like ordinary Latin"),bar,text("span","5+ · unlike ordinary Latin"));
+}
 function renderLegend() {
   const labels=new Map();
   for(const p of Object.values(panes))if(p.page&&!$("pane-"+p.id).hidden)for(const o of p.page.objects)if($("layer-"+o.kind)?.checked)labels.set(o.label,(labels.get(o.label)||0)+1);
@@ -142,9 +155,9 @@ function renderLegend() {
   }
   if(!labels.size)$("legend").append(text("span","No annotations in the enabled layers", "legend-empty"));
 }
-function redraw() {renderLegend();Object.values(panes).forEach(p=>p.draw());updateMistakes();}
+function redraw() {$("output-format").hidden=!hasSurprise();renderSurpriseKey();renderLegend();Object.values(panes).forEach(p=>p.draw());updateMistakes();}
 function updateMistakes() {
-  const objs=Object.values(panes).flatMap(p=>p.page?.objects||[]),flagged=objs.filter(o=>o.mistake!==null&&o.mistake!==undefined),n=flagged.filter(o=>o.mistake).length,nr=flagged.filter(o=>o.mistake&&o.kind==="region").length,b=$("mistakes");
+  const objs=Object.values(panes).flatMap(p=>p.page?.objects||[]),flagged=objs.filter(o=>o.mistake!==null&&o.mistake!==undefined),n=flagged.filter(o=>o.mistake).length,nr=flagged.filter(o=>o.mistake&&o.kind==="region").length,b=$("mistakes");if(b&&surpriseView()){b.hidden=true;return;}
   if(!b)return;b.hidden=!flagged.length;b.textContent=(state.mistakes===false?"Show mistakes":"Hide mistakes")+" ("+(n-nr)+" lines, "+nr+" regions)";b.style.color=n?"#e01b24":"";
 }
 function clearSelection() {
@@ -165,7 +178,12 @@ function select(pane,id,focus) {
   const m=/^network (\S+)(?: \(([\d.]+)\))? \| reference (\S+)/.exec(o.note||"");
   if(m){field("Predicted",nice(m[1])+(m[2]?` (confidence ${m[2]})`:""));field("Reference",nice(m[3]));}
   if(o.kind==="row"&&/runs across regions/.test(o.note||""))field("Crosses regions",o.note.replace(/^.*regions /,""));
-  if(o.lex_words?.length){
+  if(surpriseView()&&o.char_bits){
+    if(typeof o.surprise_bpc==="number")field("Surprise",o.surprise_bpc.toFixed(2)+" bits per character");
+    const box=text("div","","detail-text");
+    [...o.text].forEach((c,i)=>{const s=text("span",c),b=o.char_bits[i];if(typeof b==="number"){s.style.background=heat((b-1)/7);s.title=b.toFixed(1)+" bits";if(b>5)s.style.color="#fff";}box.append(s);});
+    detail.append(box);
+  }else if(o.lex_words?.length){
     const n=o.lex_words.filter(w=>w[1]===true).length,t=o.lex_words.filter(w=>w[1]!==null).length;field("Words in lexicon",`${n} of ${t}`);
     const box=text("div","","detail-text");
     o.lex_words.forEach(([w,found],i)=>{if(i)box.append(" ");const s=text("span",w);if(found===false){s.style.background="#f6c8c8";s.style.color="#9b1c1c";}else if(found===true){s.style.background="#d3eedc";}box.append(s);});
@@ -202,7 +220,7 @@ function renderPages() {
   const fragment=document.createDocumentFragment();
   for(const p of state.filtered){
     const b=text("button","","page-card"+(p.key===state.key?" active":""));b.dataset.key=p.key;
-    const head=text("span","","scan");head.append(text("span",`${p.display_id?p.display_id+" · ":""}Scan ${String(p.scan).padStart(5,"0")}`),text("span",["ocr","segmentation"].includes(dataset().kind)?"":p.semantic_units?`${p.semantic_units} units`:p.split,"dot-count"));
+    const head=text("span","","scan");head.append(text("span",`${p.display_id?p.display_id+" · ":""}Scan ${String(p.scan).padStart(5,"0")}`),text("span",state.fmt==="surprise"&&typeof p.surprise_bpc==="number"?p.surprise_bpc.toFixed(2)+" bits/char":["ocr","segmentation"].includes(dataset().kind)?"":p.semantic_units?`${p.semantic_units} units`:p.split,"dot-count"));
     b.append(head,text("span",p.book,"book-id"),text("span",p.title,"book-title"));b.title=p.title;b.onclick=()=>loadPage(p.key);fragment.append(b);
   }
   $("page-list").replaceChildren(fragment);
@@ -252,6 +270,8 @@ async function init() {
     for(const input of document.querySelectorAll(".layer-controls input"))input.onchange=redraw;
     $("opacity").oninput=()=>Object.values(panes).forEach(p=>p.draw());
     $("overlays").onclick=()=>{state.overlays=!state.overlays;$("overlays").textContent=state.overlays?"Hide overlays":"Show overlays";redraw();};
+    try{const f=localStorage.getItem("viewer-fmt");if(f==="surprise"||f==="flags")state.fmt=f;}catch(e){}
+    for(const r of document.querySelectorAll('input[name="fmt"]')){r.checked=r.value===state.fmt;r.onchange=()=>{state.fmt=r.value;try{localStorage.setItem("viewer-fmt",state.fmt);}catch(e){}renderPages();redraw();if(state.selected)select(state.selected.pane,state.selected.id,false);};}
     $("mistakes").onclick=()=>{state.mistakes=state.mistakes===false;redraw();};
     $("fit").onclick=()=>panes[state.active].fit();$("zoom-in").onclick=()=>panes[state.active].zoom(1.4);$("zoom-out").onclick=()=>panes[state.active].zoom(1/1.4);
     $("expand").onclick=()=>{const expanded=document.body.classList.toggle("focus-view");$("expand").textContent=expanded?"Restore panels":"Expand";};

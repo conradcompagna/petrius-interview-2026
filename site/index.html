@@ -18,9 +18,11 @@
         <label><input type="checkbox" id="layer-region" checked>Regions</label>
         <label><input type="checkbox" id="layer-row" checked>Rows</label>
       </div>
+      <div id="output-format" class="layer-controls" aria-label="Output format" hidden><label><input type="radio" name="fmt" value="flags" checked>Test flags</label><label><input type="radio" name="fmt" value="surprise">Language-model surprise</label></div>
       <div class="view-controls"><label class="opacity">Fill <input id="opacity" type="range" min="0" max="50" value="12" aria-label="Overlay fill opacity"></label><button id="overlays" title="Toggle overlays (O)">Hide overlays</button><button id="mistakes" title="Outline in red the lines whose label differs from the reference (M)" hidden>Mistakes</button><button id="expand" title="Give the scan the full window width">Expand</button><button id="fit" title="Fit page (F)">Fit</button><button id="zoom-out" aria-label="Zoom out">−</button><span id="zoom-value">100%</span><button id="zoom-in" aria-label="Zoom in">+</button></div>
     </div>
     <div id="legend" class="legend" aria-label="Filter overlays by label"></div>
+    <div id="surprise-key" class="legend" hidden></div>
     <div id="panes" class="panes">
       <section class="pane" id="pane-a"><div class="pane-head"><div><span id="name-a">Training labels</span><small id="status-a"></small></div></div><div class="viewport" id="view-a"></div></section>
     </div>
