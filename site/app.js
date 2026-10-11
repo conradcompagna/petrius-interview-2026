@@ -8,12 +8,10 @@ Object.assign(colors, {source_text:"#218450", heading:"#b56d42", noise:"#b55243"
 const nice = str => str === "ocr" ? "OCR text" : String(str || "").replaceAll("_", " ");
 const text = (tag, value, cls) => { const n = document.createElement(tag); n.textContent = value; if (cls) n.className = cls; return n; };
 const svgNode = (tag, attrs = {}) => { const n = document.createElementNS(NS, tag); for (const [k,v] of Object.entries(attrs)) n.setAttribute(k,v); return n; };
-const staticSite = document.documentElement.dataset.static === "true";
 function apiURL(route, collection, key) {
-  if(!staticSite)return `${route}?${new URLSearchParams({dataset:collection,key})}`;
   const page=dataset(collection)?.pages.find(p=>p.key===key);
   if(!page)throw new Error("This page is not in the published collection");
-  return route==="/image"?page.image_url.replace("/full/full/0/default.jpg","/full/2000,/0/default.jpg"):route==="/text"?page.text_url:page.annotation;
+  return route==="/image"?page.image_url.replace("/full/full/0/default.jpg","/full/2000,/0/default.jpg"):page.annotation;
 }
 async function readJSON(url) {
   const response=await fetch(url,{cache:"no-cache"});
@@ -32,31 +30,13 @@ function displayNote(value) {
   if(typeof value!=="string")return "";
   return value.split(/(?<=[.!?])\s+|\s*·\s*/).filter(s=>!/(?:AI.reviewed|\bsilver\b|human.gold|independent human|LLM annotations|model.drafted|not calibrated|not measured accuracy)/i.test(s)).join(" · ");
 }
-function collectionNote() {}
 function allowedDatasets() { return state.index.datasets.filter(d => d.pages.length); }
 function outputName(d) { return d.name; }
 function visibleObject(o) { return state.overlays && $("layer-" + o.kind)?.checked && (!state.role || o.label === state.role); }
 function saveURL() { history.replaceState(null, "", "#" + new URLSearchParams({mode:state.mode, dataset:state.dataset, page:state.key, reference:state.ref, view:state.pageView})); }
-function isComparison() { return false; }
-function isSplitView() { return isComparison() && state.pageView === "split"; }
-function updatePageView() {
-  const comparison=isComparison(),split=isSplitView();
-  document.body.classList.toggle("compare",split);
-  document.body.classList.toggle("segmentation-view",state.mode==="segmentation");
-  state.active="a";
-}
-function setPageView(value) {
-  state.pageView=value==="single"?"single":"split";
-  try { localStorage.setItem("annotation-page-view",state.pageView); } catch(e) { /* URL still preserves the choice. */ }
-  updatePageView();state.role=null;clearSelection();activate(state.active);
-  const p=panes[state.active];if(isSplitView()&&p.box)p.setBox(p.box);
-  saveURL();
-}
-
 class PagePane {
   constructor(id) { this.id=id; this.host=$("view-"+id); this.page=null; this.svg=null; this.box=null; }
   empty(title, explanation) {
-    if(this.jsonURL){URL.revokeObjectURL(this.jsonURL);this.jsonURL=null;}
     this.page=null; this.svg=null; this.box=null; this.host.replaceChildren(); this.host.classList.remove("loading");
     const el=text("div", "", "empty"); el.append(text("strong",title),text("small",explanation)); this.host.append(el);
     $("status-"+this.id).textContent="";
@@ -99,10 +79,7 @@ class PagePane {
   setBox(box,sync=true) {
     if(!this.svg)return; this.box=box;this.svg.setAttribute("viewBox",box.join(" "));
     if(this.id===state.active)$("zoom-value").textContent=Math.round(this.page.image.width/box[2]*100)+"%";
-    if(sync&&isSplitView()&&$("sync").checked){
-      const other=panes[this.id==="a"?"b":"a"];
-      if(other.page){const sx=other.page.image.width/this.page.image.width,sy=other.page.image.height/this.page.image.height;other.setBox([box[0]*sx,box[1]*sy,box[2]*sx,box[3]*sy],false);}
-    }
+
   }
   zoom(factor,point=null) {
     if(!this.box)return;
@@ -152,7 +129,7 @@ function activate(id) {
   state.active=id;
   for(const [key,p] of Object.entries(panes))$("pane-"+key).classList.toggle("active-pane",key===id);
   $("zoom-value").textContent=panes[id].box?Math.round(panes[id].page.image.width/panes[id].box[2]*100)+"%":"100%";
-  renderObjectList();
+
 }
 function renderLegend() {
   const labels=new Map();
@@ -165,12 +142,11 @@ function renderLegend() {
   }
   if(!labels.size)$("legend").append(text("span","No annotations in the enabled layers", "legend-empty"));
 }
-function redraw() {renderLegend();Object.values(panes).forEach(p=>p.draw());renderObjectList();updateMistakes();}
+function redraw() {renderLegend();Object.values(panes).forEach(p=>p.draw());updateMistakes();}
 function updateMistakes() {
   const objs=Object.values(panes).flatMap(p=>p.page?.objects||[]),flagged=objs.filter(o=>o.mistake!==null&&o.mistake!==undefined),n=flagged.filter(o=>o.mistake).length,nr=flagged.filter(o=>o.mistake&&o.kind==="region").length,b=$("mistakes");
   if(!b)return;b.hidden=!flagged.length;b.textContent=(state.mistakes===false?"Show mistakes":"Hide mistakes")+" ("+(n-nr)+" lines, "+nr+" regions)";b.style.color=n?"#e01b24":"";
 }
-function renderObjectList() {}
 function clearSelection() {
   state.selected=null;$("selection-detail").replaceChildren();$("inspect-title").textContent="";
   document.querySelector(".inspector").classList.remove("has-selection");redraw();
@@ -200,15 +176,13 @@ function select(pane,id,focus) {
   if(typeof o.detection_score==="number")field("Detector score",o.detection_score.toFixed(3));
   if(o.probabilities&&Object.keys(o.probabilities).length)for(const [label,score] of Object.entries(o.probabilities))field(nice(label),typeof score==="number"?score.toFixed(3):String(score));
   if(o.input_line_refs?.length)field("Source detections",o.input_line_refs.map(r=>`${r.set}:${r.id}`).join(", "));
-  if(focus)p.focus(o);Object.values(panes).forEach(p=>p.draw());renderObjectList();
+  if(focus)p.focus(o);Object.values(panes).forEach(p=>p.draw());
 }
 
 function renderCollection() {
   const available=allowedDatasets();
   if(!available.length)throw new Error("No collections are available in this view");
   if(!available.some(d=>d.id===state.dataset))state.dataset=available[0].id;
-  const group=(label,ds)=>{const g=document.createElement("optgroup");g.label=label;g.append(...ds.map(d=>new Option(`${outputName(d)} · ${d.pages.length}`,d.id)));return g;};
-  const fin=available.filter(d=>d.group==="finished"),old=available.filter(d=>d.group!=="finished");
   $("dataset").replaceChildren(...available.map(d=>new Option(`${outputName(d)} · ${d.pages.length}`,d.id)));
   $("dataset").value=state.dataset;state.mode=dataset().group==="finished"?"finished":"archive";
   renderPages();
@@ -244,7 +218,7 @@ function updatePosition() {
 function navigate(delta) { const i=state.filtered.findIndex(p=>p.key===state.key);const next=state.filtered[i+delta];if(i>=0&&next)loadPage(next.key); }
 async function fetchPage(ds,key) {return readJSON(apiURL("/api/page",ds,key));}
 async function loadPage(key) {
-  const serial=++state.serial;state.key=key;state.role=null;state.active=isComparison()?"b":"a";state.selected=null;
+  const serial=++state.serial;state.key=key;state.role=null;state.active="a";state.selected=null;
   $("selection-detail").replaceChildren();document.querySelector(".inspector").classList.remove("has-selection");
   $("inspect-title").textContent="";
   const descriptor=dataset().pages.find(p=>p.key===key);if(!descriptor)return;
@@ -252,44 +226,25 @@ async function loadPage(key) {
   $("page-subtitle").textContent=`${descriptor.book} · ${descriptor.split}`;$("page-title").title=descriptor.title;
   updatePosition();saveURL();
   const selectedCard=Array.from($("page-list").children).find(c=>c.dataset.key===key);selectedCard?.scrollIntoView({block:"nearest"});
-  const compare=isComparison();updatePageView();
-  panes.a.empty("Loading scan…","");
-  let reference=null;
-  if(compare){
-    const choices=state.index.datasets.filter(d=>(dataset().group!=="finished"||d.group==="finished")&&d.id!==state.dataset&&d.pages.some(p=>p.key===key));
-    $("reference").replaceChildren(new Option("Reference: automatic","auto"),...choices.map(d=>new Option(outputName(d),d.id)));
-    if(state.ref!=="auto"&&!choices.some(d=>d.id===state.ref))state.ref="auto";
-    $("reference").value=state.ref;
-    reference=state.ref!=="auto"?state.ref:choices.find(d=>d.id===dataset().reference_dataset)?.id||choices.find(d=>d.kind==="reference")?.id||choices[0]?.id;
-    $("name-a").textContent="Reference annotations";
+  panes.a.empty("Loading scan…", "");
+  try {
+    const page = await fetchPage(state.dataset, key);
+    if (serial !== state.serial) return;
+    panes.a.show(page);
+  } catch (error) {
+    if (serial !== state.serial) return;
+    panes.a.empty("Page unavailable", error.message);
   }
-  const mainID=compare?"b":"a";
-  const jobs=[fetchPage(state.dataset,key).then(p=>{if(serial===state.serial)panes[mainID].show(p);}).catch(e=>{if(serial===state.serial)panes[mainID].empty("Page unavailable",e.message);})];
-  if(compare&&reference)jobs.push(fetchPage(reference,key).then(p=>{if(serial===state.serial)panes.a.show(p);}).catch(e=>{if(serial===state.serial)panes.a.empty("Reference unavailable",e.message);}));
-  else if(compare)panes.a.empty("No matching collection", "Choose a page included in both an annotation collection and a model output.");
-  await Promise.all(jobs);if(serial!==state.serial)return;
-  activate(panes[mainID].page?mainID:isSplitView()?"a":mainID);redraw();saveURL();
-}
-function setMode(mode) {
-  state.mode=mode;state.ref="auto";
-  if(mode==="finished")$("experiment-archive").open=false;
-  if(mode==="compare")state.pageView="split";
-  for(const b of document.querySelectorAll("[data-mode]"))b.classList.toggle("active",b.dataset.mode===mode);
-  renderCollection();const pages=dataset().pages;loadPage(pages.some(p=>p.key===state.key)?state.key:pages[0].key);
+  activate("a"); redraw(); saveURL();
 }
 
 async function init() {
   panes.a=new PagePane("a");
   try {
-    state.index=await readJSON(staticSite?"data/index.json":"/api/index");
-    if(staticSite){}
+    state.index=await readJSON("data/index.json");
     const hash=new URLSearchParams(location.hash.slice(1));
-    let savedPageView;try { savedPageView=localStorage.getItem("annotation-page-view"); } catch(e) { /* Storage is optional. */ }
-    state.pageView=(hash.get("view")||savedPageView)==="split"?"split":"single";
     state.mode="finished";
     state.dataset=hash.get("dataset")||"finished-task1-min";state.ref=hash.get("reference")||"auto";
-    const requested=state.index.datasets.find(d=>d.id===state.dataset);
-    if(requested&&requested.group!=="finished"&&state.mode!=="compare")state.mode="archive";
     state.key=hash.get("page")||"bsb10144443/00040";
     renderCollection();
     $("dataset").onchange=()=>selectOutput($("dataset").value);
@@ -306,18 +261,6 @@ async function init() {
       if(e.key.toLowerCase()==="f")$("fit").click();if(e.key.toLowerCase()==="o")$("overlays").click();if(e.key.toLowerCase()==="m"&&!$("mistakes").hidden)$("mistakes").click();if(e.key==="Escape")clearSelection();
     });
     await loadPage(dataset().pages.some(p=>p.key===state.key)?state.key:dataset().pages[0].key);
-    setInterval(async()=>{
-      if(!["ocr","segmentation"].includes(state.mode))return;
-      try {
-        const requested=state.dataset,response=await fetch("/api/ocr-status?"+new URLSearchParams({dataset:requested}));if(!response.ok)return;
-        const status=await response.json();if(!["ocr","segmentation"].includes(state.mode)||state.dataset!==requested)return;
-        const ready=new Set(status.ready),d=dataset();
-        if(d.completed_pages===ready.size)return;
-        d.completed_pages=ready.size;d.pages.forEach(p=>p.ocr_ready=ready.has(p.key));collectionNote();renderPages();
-        if((state.mode==="segmentation"?panes.b:panes.a).page?.pending&&ready.has(state.key))loadPage(state.key);
-      }catch(e){ /* Keep the source scan available if the local server restarts. */ }
-    },20000);
-    if(state.index.warnings.length)toast(`${state.index.warnings.length} source examples were unavailable; see /api/index for details.`);
-  }catch(e){panes.a.empty("Could not open the annotation desk",e.message+(staticSite?"":". Check that the local Python server is running."));$("page-count").textContent="Connection unavailable";}
+  }catch(e){panes.a.empty("Could not open the annotation desk",e.message);$("page-count").textContent="Connection unavailable";}
 }
 init();

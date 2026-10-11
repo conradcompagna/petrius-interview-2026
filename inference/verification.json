@@ -53,5 +53,33 @@
       "labels_complete": true
     }
   ],
-  "architecture_unchanged_evidence": "unchanged_models.json"
+  "architecture_unchanged_evidence": "unchanged_models.json",
+  "runtime_cleanup": {
+    "checked_on": "2026-10-11",
+    "device": "cpu",
+    "neural_comparison": "Before and after cleanup predictions are byte-for-byte identical, including confidence scores, on both saved PERO page records.",
+    "line_count": 545,
+    "complete_pipeline_rerun": [
+      {
+        "key": "custom/bsb10144443_00040",
+        "regions": 21,
+        "lines": 279,
+        "selected_lines": 41,
+        "seconds": 38.53,
+        "input_sha256": "139311c47ada50e6bd5243566fe56c644c2526d423f2b8509c4346cbf6975fe1",
+        "prediction_sha256": "418279a47505f9d4fa1c2d6263f0cb5bd3221b14386daec3c09b3cb3a814dbf1"
+      },
+      {
+        "key": "custom/bsb10144443_00041",
+        "regions": 22,
+        "lines": 266,
+        "selected_lines": 48,
+        "seconds": 19.58,
+        "input_sha256": "b5451fb627c1bfca1a78987a255f02b0639e1bfa5408eadf08771a67ad23daf1",
+        "prediction_sha256": "f967542ac8bb388d07b0a83f4fd200b809ac98e69c9533085d874c538668cd2d"
+      }
+    ],
+    "model_files_verified": 11,
+    "model_architecture_unchanged": true
+  }
 }

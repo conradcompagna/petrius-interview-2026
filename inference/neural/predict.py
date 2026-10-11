@@ -1,11 +1,11 @@
-"""Label pages with the trained line_nn_v3 models (steps 4-10). Run from the repository root:
-  python line_nn_v3/predict.py OUT_DIR page.json [page.json ...]        [model=full]
-Input: viewer page JSON with D-FINE regions, PERO lines + OCR and the image path. Output: OUT_DIR/<book>/<scan>.json with one
-label per line (text / summarium / inscriptio / other / outside), its confidence, and each region's central-block probability.
-Duplicate detections are removed by the rule in extract.py; nothing else is rule-based."""
+"""Apply both final trained taggers to D-FINE/PERO page JSON.
+
+Usage: python inference/neural/predict.py OUT_DIR page.json [page.json ...]
+The main inference/run.py pipeline prepares these inputs from local page images.
+"""
 import sys, os, json, numpy as np, torch
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from train import *
+from train import HERE, ROLE, Lines, Regions
 from extract import page_arrays
 
 
