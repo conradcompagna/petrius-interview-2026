@@ -182,7 +182,6 @@ function select(pane,id,focus) {
   const m=/^network (\S+)(?: \(([\d.]+)\))? \| reference (\S+)/.exec(o.note||"");
   if(m){field("Predicted",nice(m[1])+(m[2]?` (confidence ${m[2]})`:""));field("Reference",nice(m[3]));}
   if(o.kind==="row"&&/runs across regions/.test(o.note||""))field("Crosses regions",o.note.replace(/^.*regions /,""));
-  if(o.kind==="row"){const actions=text("div","","detail-actions"),zoom=text("button","Zoom to row");zoom.onclick=()=>p.focus(o);actions.append(zoom);detail.append(actions);}
   if(surpriseView()&&o.char_bits){
     if(typeof o.surprise_bpc==="number")field("Surprise",o.surprise_bpc.toFixed(2)+" bits per character");
     const box=text("div","","detail-text char-heat");
