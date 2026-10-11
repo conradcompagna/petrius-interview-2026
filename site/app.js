@@ -4,7 +4,7 @@ const $ = id => document.getElementById(id);
 const NS = "http://www.w3.org/2000/svg";
 const colors = {text:"#218450", summarium:"#a038a0", inscriptio:"#ca8007", other:"#657588", main_text:"#218450", gloss:"#3d82bd", marginalia:"#795ac0", header:"#b56d42", footer:"#b56d42", initial:"#d14a50", mixed:"#168e94", uncertain:"#949080", unknown:"#929a90", reject:"#b55243", non_main:"#b55243"};
 const color = label => colors[label] || "#7d8790";
-Object.assign(colors, {source_text:"#218450", heading:"#b56d42", noise:"#b55243", ungrouped:"#e02035", outside:"#8a8f95", text_region:"#168e94", text_line:"#397caf", unassigned:"#cf4553", main_text_block:"#218450", joined_heading:"#ca8007", not_selected:"#8a8f95", cross_region:"#397caf", low_lexicon:"#397caf", ocr_row:"#397caf", mdz_paragraph:"#e0a000"});
+Object.assign(colors, {source_text:"#218450", heading:"#b56d42", noise:"#b55243", ungrouped:"#e02035", outside:"#8a8f95", text_region:"#168e94", text_line:"#397caf", unassigned:"#cf4553", main_text_block:"#218450", joined_heading:"#ca8007", not_selected:"#8a8f95", cross_region:"#397caf", low_lexicon:"#397caf", ocr_row:"#397caf", mdz_paragraph:"#e0a000", annotated_region:"#168e94"});
 const nice = str => str === "ocr" ? "OCR text" : String(str || "").replaceAll("_", " ");
 const text = (tag, value, cls) => { const n = document.createElement(tag); n.textContent = value; if (cls) n.className = cls; return n; };
 const svgNode = (tag, attrs = {}) => { const n = document.createElementNS(NS, tag); for (const [k,v] of Object.entries(attrs)) n.setAttribute(k,v); return n; };
@@ -34,7 +34,7 @@ function displayNote(value) {
 }
 function collectionNote() {}
 function allowedDatasets() { return state.index.datasets.filter(d => d.pages.length); }
-function outputName(d) { return d.id==="ocr-test100"?"Kraken · original OCR":d.name; }
+function outputName(d) { return d.name; }
 function visibleObject(o) { return state.overlays && $("layer-" + o.kind)?.checked && (!state.role || o.label === state.role); }
 function saveURL() { history.replaceState(null, "", "#" + new URLSearchParams({mode:state.mode, dataset:state.dataset, page:state.key, reference:state.ref, view:state.pageView})); }
 function isComparison() { return false; }
@@ -126,7 +126,7 @@ class PagePane {
     // Keep spans and initials above rows. Within each layer, draw excluded
     // detections first: overlapping outside duplicates must not intercept clicks
     // on the retained, labelled annotation visible underneath them.
-    const rank={region:0,draft:1,row:2,span:3,object:4};
+    const rank={region:0,paragraph:1,draft:1,row:2,span:3,object:4};
     const excluded=o=>o.label==="outside"||o.label==="not_selected";
     for(const o of [...this.page.objects].sort((a,b)=>rank[a.kind]-rank[b.kind]||Number(excluded(b))-Number(excluded(a)))) {
       if(!visibleObject(o))continue;
@@ -165,7 +165,7 @@ function renderLegend() {
   }
   if(!labels.size)$("legend").append(text("span","No annotations in the enabled layers", "legend-empty"));
 }
-function redraw() {renderLegend();Object.values(panes).forEach(p=>p.draw());renderObjectList();updateMistakes();}
+function redraw() {const pc=$("paragraph-control");if(pc)pc.hidden=!Object.values(panes).some(p=>p.page?.objects.some(o=>o.kind==="paragraph"));renderLegend();Object.values(panes).forEach(p=>p.draw());renderObjectList();updateMistakes();}
 function updateMistakes() {
   const objs=Object.values(panes).flatMap(p=>p.page?.objects||[]),flagged=objs.filter(o=>o.mistake!==null&&o.mistake!==undefined),n=flagged.filter(o=>o.mistake).length,nr=flagged.filter(o=>o.mistake&&o.kind==="region").length,b=$("mistakes");
   if(!b)return;b.hidden=!flagged.length;b.textContent=(state.mistakes===false?"Show mistakes":"Hide mistakes")+" ("+(n-nr)+" lines, "+nr+" regions)";b.style.color=n?"#e01b24":"";
@@ -212,7 +212,7 @@ function renderCollection() {
   if(!available.some(d=>d.id===state.dataset))state.dataset=available[0].id;
   const group=(label,ds)=>{const g=document.createElement("optgroup");g.label=label;g.append(...ds.map(d=>new Option(`${outputName(d)} · ${d.pages.length}`,d.id)));return g;};
   const fin=available.filter(d=>d.group==="finished"),old=available.filter(d=>d.group!=="finished");
-  $("dataset").replaceChildren(...[fin.length&&group("Finished work",fin),old.length&&group("Earlier experiments",old)].filter(Boolean));
+  $("dataset").replaceChildren(...available.map(d=>new Option(`${outputName(d)} · ${d.pages.length}`,d.id)));
   $("dataset").value=state.dataset;state.mode=dataset().group==="finished"?"finished":"archive";
   renderPages();
 }
@@ -290,7 +290,7 @@ async function init() {
     let savedPageView;try { savedPageView=localStorage.getItem("annotation-page-view"); } catch(e) { /* Storage is optional. */ }
     state.pageView=(hash.get("view")||savedPageView)==="split"?"split":"single";
     state.mode="finished";
-    state.dataset=hash.get("dataset")||"finished-interview";state.ref=hash.get("reference")||"auto";
+    state.dataset=hash.get("dataset")||"finished-task1-min";state.ref=hash.get("reference")||"auto";
     const requested=state.index.datasets.find(d=>d.id===state.dataset);
     if(requested&&requested.group!=="finished"&&state.mode!=="compare")state.mode="archive";
     state.key=hash.get("page")||"bsb10144443/00040";
