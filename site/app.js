@@ -139,7 +139,7 @@ function activate(id) {
 }
 const hasSurprise=()=>Object.values(panes).some(p=>p.page?.objects.some(o=>typeof o.surprise_bpc==="number"));
 const gothicView=()=>state.dataset==="mdz-ocr-lexicon";
-const surpriseView=()=>hasSurprise()&&(gothicView()||state.fmt==="surprise");
+const surpriseView=()=>hasSurprise()&&(gothicView()||(state.dataset!=="mdz-ocr-regions"&&state.fmt==="surprise"));
 function paleHeat(t){return heat(t).replace(/\d+/g,v=>Math.round(255+(Number(v)-255)*.18));}
 function heat(t){
   const stops=[[0,[255,247,214]],[0.33,[253,187,99]],[0.66,[232,69,44]],[1,[122,12,12]]];t=Math.max(0,Math.min(1,t));
@@ -164,7 +164,7 @@ function renderLegend() {
   }
   if(!labels.size)$("legend").append(text("span","No annotations in the enabled layers", "legend-empty"));
 }
-function redraw() {$("output-format").hidden=gothicView()||!hasSurprise();renderSurpriseKey();renderLegend();Object.values(panes).forEach(p=>p.draw());updateMistakes();}
+function redraw() {$("output-format").hidden=state.dataset==="mdz-ocr-regions"||gothicView()||!hasSurprise();renderSurpriseKey();renderLegend();Object.values(panes).forEach(p=>p.draw());updateMistakes();}
 function updateMistakes() {
   const objs=Object.values(panes).flatMap(p=>p.page?.objects||[]),flagged=objs.filter(o=>o.mistake!==null&&o.mistake!==undefined),n=flagged.filter(o=>o.mistake).length,nr=flagged.filter(o=>o.mistake&&o.kind==="region").length,b=$("mistakes");if(b&&surpriseView()){b.hidden=true;return;}
   if(!b)return;b.hidden=!flagged.length;b.textContent=(state.mistakes===false?"Show mistakes":"Hide mistakes")+" ("+(n-nr)+" lines, "+nr+" regions)";b.style.color=n?"#e01b24":"";
@@ -241,7 +241,7 @@ function renderPages() {
   const fragment=document.createDocumentFragment();
   for(const p of state.filtered){
     const b=text("button","","page-card"+(p.key===state.key?" active":""));b.dataset.key=p.key;
-    const head=text("span","","scan");head.append(text("span",`${p.display_id?p.display_id+" · ":""}Scan ${String(p.scan).padStart(5,"0")}`),text("span",(gothicView()||state.fmt==="surprise")&&typeof p.surprise_bpc==="number"?p.surprise_bpc.toFixed(2)+" bits/char":["ocr","segmentation"].includes(dataset().kind)?"":p.semantic_units?`${p.semantic_units} units`:p.split,"dot-count"));
+    const head=text("span","","scan");head.append(text("span",`${p.display_id?p.display_id+" · ":""}Scan ${String(p.scan).padStart(5,"0")}`),text("span",(gothicView()||(state.dataset!=="mdz-ocr-regions"&&state.fmt==="surprise"))&&typeof p.surprise_bpc==="number"?p.surprise_bpc.toFixed(2)+" bits/char":["ocr","segmentation"].includes(dataset().kind)?"":p.semantic_units?`${p.semantic_units} units`:p.split,"dot-count"));
     b.append(head,text("span",p.book,"book-id"),text("span",p.title,"book-title"));b.title=p.title;b.onclick=()=>loadPage(p.key);fragment.append(b);
   }
   $("page-list").replaceChildren(fragment);
