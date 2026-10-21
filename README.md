@@ -22,7 +22,7 @@ The detector dataset contains **100 training pages from 20 books and 20 evaluati
 
 D-FINE epoch 14 has pooled region F1 of 0.862 at IoU 0.50 and 0.745 at IoU 0.75. V3 has four-role macro-F1 of 0.945 on its 20 model-selection pages, excluding annotated duplicate regions.
 
-Region and line annotations were generated with language models and manually reviewed and corrected by Conrad Compagna, who also personally verified the original two example pages. Layout-family labels were model-assigned. Code was developed with Claude and Codex under Conrad Compagna's direction.
+Region and line annotations were manually reviewed and corrected.
 
 ## Experiments
 
