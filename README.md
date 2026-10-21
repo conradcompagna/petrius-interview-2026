@@ -1,47 +1,50 @@
-# Historical Latin Document Analysis interview submission
+# Historical Latin Document Analysis
 
-I first completed Task I with a gradient-boosted tree classifier, which I thought had the best chance of generalizing to the wider project without training a neural network. It did not, so I have submitted two things: a simpler parser for the two assigned pages and a fully functional neural pipeline for the task book and other MDZ books with the same layout of central legal text, summaries and inscriptions. The pipeline combines a fine-tuned D-FINE region detector, PERO line detection and OCR, and a multistage, multimodal transformer model that encodes image and text inputs, identifies the central regions and classifies their lines according to the task taxonomy. Both models used annotation datasets covering 120 pages, synthetically generated and then manually reviewed and corrected. The pipeline resembles what I would use in the research project, though smaller and targeted to this layout. This repository contains the code, [trained weights](https://github.com/conradcompagna/historical-latin-document-analysis/releases/download/interview-2026-10-07/assets-models-01.zip), and a [viewer](https://conradcompagna.github.io/historical-latin-document-analysis/) for inspecting the datasets discussed in [my note](docs/Compagna_historical-latin_Task_I_Note.docx).
+Early printed Latin legal books place central text inside surrounding gloss, with summaries, inscriptions, headings and initials marking different textual functions. Library OCR often joins these layers into single rows. Separating their boundaries and roles permits analysis of the legal text and its commentary.
+
+The pipeline combines **fine-tuned D-FINE Large region detection**, **PERO line detection and OCR**, and **V3: two custom multimodal transformers trained from scratch**. A two-layer region transformer selects central text regions. A four-layer line transformer assigns `text`, `summarium`, `inscriptio` or `other`; surrounding material is `outside`. Both combine image features, recognized characters and page coordinates.
+
+**[Annotation and prediction viewer](https://conradcompagna.github.io/historical-latin-document-analysis/)** · [Model and source-image downloads](https://github.com/conradcompagna/historical-latin-document-analysis/releases/tag/research-models-v1)
+
+## Code and data
 
 | Folder | Contents |
 |---|---|
-| `task1_min/` | Task I parser, reference labels and evaluation results |
-| `inference/` | Neural pipeline, random-page sampler and dependencies |
-| `models/` (downloaded separately) | D-FINE, PERO and neural-tagger weights |
-| `site/` | Viewer and datasets |
-| `tools/` | Model downloader and site validator |
-| `docs/` | Submission note, model manifest, image sources and verification records |
-| `.github/workflows/` | Viewer deployment |
+| [`inference/`](inference/) | Complete image-to-labelled-text pipeline and V3 architecture. |
+| [`training/`](training/) | D-FINE fine-tuning; V3 input construction, training and evaluation; annotation export and validation. |
+| [`data/`](data/) | Full detector and classifier annotations, frozen splits, OCR inputs, source identities and character-model training text. |
+| [`models/`](models/) | Model specifications and configurations; weights installed from the release. |
+| [`results/`](results/) | Retained training histories, predictions and experiment results. |
+| [`experiments/`](experiments/) | Character language models, OCR diagnostics, layout-family classification and the segmentation bakeoff. |
+| [`site/`](site/) | Source-image inspection, reference/prediction comparison and OCR heatmaps. |
 
-## [Open the viewer](https://conradcompagna.github.io/historical-latin-document-analysis/)
+The detector dataset contains **100 training pages from 20 books and 20 evaluation pages from 20 other books**, with 1,428 regions. V3 uses **100 training pages and 20 evaluation pages from ten matching-layout books**, with 32,018 detected lines. Git contains the annotations, OCR and frozen splits; release assets contain the exact source images and weights.
 
-- **1 · Task I:** Algorithm-based parser results on scans 40–41.
-- **2a · First parser, same book:** The 102-page review sample from the 1582 Decretals.
-- **2b · First parser, other books:** Parser results on 132 pages from eleven other editions.
-- **3a · MDZ OCR, region crossings:** Fifty sample pages showing OCR rows crossing region boundaries.
-- **3b · MDZ OCR, dictionary scores:** Fifty sample pages with the lowest dictionary-match scores.
-- **4 · Stock models:** Layout and OCR comparisons on fourteen sample pages.
-- **5a · Region annotations:** Annotated regions on 100 training pages and 20 evaluation pages.
-- **5b · D-FINE evaluation:** Predicted regions on the 20 held-out pages.
-- **6a · Line annotations:** Line labels, OCR and mixed-line spans on 100 training pages and 20 evaluation pages.
-- **6b · Neural-tagger evaluation:** Predicted region and line labels on the 20 held-out pages.
-- **6c · Full pipeline:** D-FINE, PERO and neural-tagger results on the two task pages.
-- **7 · Full pipeline, fresh pages:** Results on ten random legal-text pages from ten matching-layout books.
+D-FINE epoch 14 has pooled region F1 of 0.862 at IoU 0.50 and 0.745 at IoU 0.75. V3 has four-role macro-F1 of 0.945 on its 20 model-selection pages, excluding annotated duplicate regions.
 
-## Run the Task I parser and evaluation
+Region and line annotations were generated with language models and manually reviewed and corrected by Conrad Compagna, who also personally verified the original two example pages. Layout-family labels were model-assigned. Code was developed with Claude and Codex under Conrad Compagna's direction.
 
-1. **Code → Download ZIP**; extract and open `historical-latin-document-analysis-main`.
-2. [Install Python 3.12 for Windows](https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe) with **Add python.exe to PATH** enabled.
-3. Open `task1_min` and double-click `run.bat`.
+## Experiments
 
-Results in `task1_min`: labelled JPGs, `lines.csv` and `evaluation.json` (comparison with `reference.csv`).
+- **Character language models:** sixth-order interpolated Kneser–Ney models and three treatments of abbreviation marks. Changing the reference corpus with normalization held constant reduces pooled surprise from 3.563 to 3.445 bits/character on 50 Gothic OCR pages. Training text and row scores are included.
+- **OCR audit:** lexical diagnostics and OCR rows crossing textual boundaries; 119 acquired pages and 1,535 flagged rows in the accepted-region sample.
+- **Layout families:** page measurements and frozen visual embeddings classify 100 books, with complete books held out during evaluation.
+- **Segmentation bakeoff:** stock Surya, PP-OCRv5 and PP-DocLayoutV3 on 100 scans; all 300 outputs and native records retained, with line counts and block counts recorded separately.
 
-## Run the neural pipeline on fresh random pages
+## Execution
 
-Download the repository and install Python as above.
+Python 3.12; commands run from the repository root. Training and bakeoff dependencies are in `requirements/`. D-FINE training requires CUDA with BF16 support; the bakeoff requires CUDA.
 
-1. In the repository folder, double-click `GET_ASSETS.bat` to download the weights (490 MB).
-2. Double-click `RUN_RANDOM_PAGES.bat`.
+```sh
+python -m pip install -r requirements/inference-cpu.txt
+python tools/get_assets.py --group core
+python -m inference.run page.jpg --device cpu
+```
 
-Processes three random pages from ten matching-layout books, excluding training, evaluation and viewer pages.
+`outputs/inference/` contains geometry, OCR, predictions, overlays and extracted central text. `--device cuda` selects CUDA.
 
-Results in the newest `inference/outputs/random_*` folder: `overlays` (images), `text` (text), `predictions` (labels).
+Training images are installed with `python tools/get_assets.py --group training`. D-FINE training uses the separate `requirements/training-dfine.txt` environment and runs `python -m training.dfine.train --mode pilot`, `python -m training.dfine.verify_export`, then `python -m training.dfine.train --mode full`. The pilot comparison images are reviewed before recording `passed` and its `checkpoint_sha256` in `outputs/training/dfine/pilot/visual_review.json`. V3 uses `requirements/training-neural.txt`: `python -m training.neural.extract`, then `python -m training.neural.run train reproduction`. Ctrl+C retains its best selected weights.
+
+Experiment entry points are `python -m experiments.charlm.run`, `python -m experiments.ocr_audit.audit analyze`, `python -m experiments.layout_families.classify`, and `python -m experiments.segmentation_bakeoff.run --system surya`. Asset groups `experiments` and `bakeoff` supply their inputs and weights. New reports are written to `outputs/`; retained results are in `results/`.
+
+Checks: `python tools/verify_repository.py` and `python tools/validate_static_site.py site`. [`source_map.json`](source_map.json) records source provenance. Library image rights and upstream model sources accompany the data and models.

@@ -1,0 +1,132 @@
+{
+  "created": "2026-02-20T08:56:28.82118-08:00",
+  "modified": "2026-02-20T08:56:29.342269-08:00",
+  "id": 18715364,
+  "conceptrecid": "18715363",
+  "doi": "10.5281/zenodo.18715364",
+  "conceptdoi": "10.5281/zenodo.18715363",
+  "doi_url": "https://doi.org/10.5281/zenodo.18715364",
+  "metadata": {
+    "title": "D-FINE Large region segmentation model trained on LADaS",
+    "doi": "10.5281/zenodo.18715364",
+    "publication_date": "2026-02-20",
+    "description": "<h1>D-FINE Large LADaS Region Segmentation</h1>\n<p>A D-FINE Large region segmentation model for document layout analysis, trained\non the <a href=\"https://github.com/DEFI-COLaF/LADaS\">LADaS</a> dataset. The model\ndetects 37 region types following the\n<a href=\"https://segmonto.github.io/\">SegmOnto</a> vocabulary.</p>\n<p>This is the best performing model in the D-FINE LADaS series, achieving the\nhighest mAP@50 (0.4308) and mAP@50:95 (0.3112) scores.</p>\n<h2>Architecture</h2>\n<p><a href=\"https://arxiv.org/abs/2410.13842\">D-FINE</a> is a transformer-based object\ndetector for document layout analysis. This Large variant uses:</p>\n<ul>\n<li><strong>Backbone:</strong> HGNetv2-B4</li>\n<li><strong>Encoder hidden dim:</strong> 256</li>\n<li><strong>Decoder hidden dim:</strong> 256</li>\n<li><strong>Transformer decoder layers:</strong> 6</li>\n<li><strong>Feature strides:</strong> [8, 16, 32]</li>\n<li><strong>Detection queries:</strong> 300</li>\n<li><strong>Input resolution:</strong> 1280x1280</li>\n<li><strong>Model size:</strong> ~126 MB</li>\n</ul>\n<h2>Training Data</h2>\n<p>The model was trained on the <a href=\"https://github.com/DEFI-COLaF/LADaS\">LADaS</a>\n(Layout Analysis Dataset) by Thibault Clérice et al. LADaS is a\nmulti-document diachronic layout analysis dataset comprising documents from\nthe 17th century to the present, including monographs, PhD theses, auction\ncatalogs, academic papers, and magazines. Annotations follow the SegmOnto\nvocabulary.</p>\n<h2>Uses</h2>\n<p>Intended for document region segmentation as part of an automatic text\nrecognition pipeline with <a href=\"https://kraken.re\">kraken</a>. Detects document\nzones such as main text, headings, graphics, margins, tables, and other\nstructural elements in historical and contemporary documents.</p>\n<h2>Bias, Risks, and Limitations</h2>\n<ul>\n<li>The training data is predominantly French with Latin script. Performance on\n  other languages may vary.</li>\n<li>Rare classes (FigureZone-FigDesc, FigureZone-Head, GraphicZone-TextualContent,\n  MainZone-Maths) have very low or zero detection scores.</li>\n</ul>\n<h2>Training Details</h2>\n<h3>Training Procedure and Hyperparameters</h3>\n<ul>\n<li><strong>Training regime:</strong> BF16 mixed precision</li>\n<li><strong>Epochs:</strong> 32</li>\n<li><strong>Learning rate:</strong> 1e-4</li>\n<li><strong>Schedule:</strong> Constant with 1000-step warmup</li>\n<li><strong>Weight decay:</strong> 1e-5</li>\n<li><strong>Batch size:</strong> 8</li>\n<li><strong>Image size:</strong> 1280x1280</li>\n</ul>\n<h2>Evaluation</h2>\n<h3>Testing Data</h3>\n<p>LADaS test split.</p>\n<h3>Metrics</h3>\n<p>|  | mAP@50 | mAP@50:95 | Precision | Recall | F1 |\n|---|---|---|---|---|---|\n| <strong>Overall</strong> | <strong>0.4308</strong> | <strong>0.3112</strong> | <strong>0.4308</strong> | <strong>0.7766</strong> | <strong>0.5542</strong> |</p>\n<h4>Per-Class Results</h4>\n<p>| Class | mAP@50:95 | Precision | Recall | F1 |\n|---|---|---|---|---|\n| AdvertisementZone | 0.0999 | 0.1371 | 0.6459 | 0.2262 |\n| DigitizationArtefactZone | 0.2976 | 0.4035 | 0.6902 | 0.5093 |\n| DropCapitalZone | 0.5814 | 0.8389 | 0.7073 | 0.7675 |\n| FigureZone | 0.1292 | 0.1776 | 0.5867 | 0.2727 |\n| FigureZone-FigDesc | 0.0000 | 0.0000 | 0.0000 | 0.0000 |\n| FigureZone-Head | 0.0000 | 0.0000 | 0.0000 | 0.0000 |\n| FormZone | 0.0465 | 0.0602 | 0.6154 | 0.1097 |\n| GraphicZone | 0.5480 | 0.6752 | 0.7901 | 0.7282 |\n| GraphicZone-Decoration | 0.3613 | 0.5299 | 0.5784 | 0.5531 |\n| GraphicZone-FigDesc | 0.0850 | 0.1252 | 0.5549 | 0.2043 |\n| GraphicZone-Head | 0.4081 | 0.6807 | 0.6677 | 0.6741 |\n| GraphicZone-Part | 0.1060 | 0.1410 | 0.4008 | 0.2087 |\n| GraphicZone-TextualContent | 0.0141 | 0.0228 | 0.2815 | 0.0422 |\n| MainZone-Continued | 0.4889 | 0.5444 | 0.7091 | 0.6159 |\n| MainZone-Date | 0.2801 | 0.4246 | 0.6580 | 0.5161 |\n| MainZone-Entry | 0.5301 | 0.6853 | 0.7423 | 0.7127 |\n| MainZone-Head | 0.4620 | 0.6784 | 0.6875 | 0.6829 |\n| MainZone-Lg | 0.5636 | 0.7208 | 0.7678 | 0.7436 |\n| MainZone-ListItem | 0.1395 | 0.2204 | 0.5726 | 0.3183 |\n| MainZone-Maths | 0.0147 | 0.0176 | 0.4311 | 0.0339 |\n| MainZone-Other | 0.4174 | 0.4551 | 0.6593 | 0.5385 |\n| MainZone-P | 0.6517 | 0.7456 | 0.8285 | 0.7849 |\n| MainZone-Signature | 0.7072 | 0.7726 | 0.9098 | 0.8356 |\n| MainZone-Sp | 0.7202 | 0.8405 | 0.8690 | 0.8545 |\n| MarginTextZone-ContinuedNotes | 0.0141 | 0.0171 | 0.6571 | 0.0334 |\n| MarginTextZone-ManuscriptAddendum | 0.2740 | 0.5657 | 0.5258 | 0.5450 |\n| MarginTextZone-Notes | 0.4206 | 0.5991 | 0.6452 | 0.6213 |\n| MusicZone | 0.5501 | 0.8224 | 0.6927 | 0.7520 |\n| NumberingZone | 0.3720 | 0.7821 | 0.5183 | 0.6234 |\n| QuireMarksZone | 0.2925 | 0.5426 | 0.6077 | 0.5733 |\n| RunningTitleZone | 0.4752 | 0.7801 | 0.6444 | 0.7058 |\n| StampZone | 0.5654 | 0.7221 | 0.7462 | 0.7339 |\n| StampZone-Sticker | 0.1406 | 0.2053 | 0.5424 | 0.2978 |\n| TableZone | 0.2727 | 0.3499 | 0.4770 | 0.4037 |\n| TableZone-Head | 0.1198 | 0.2028 | 0.4538 | 0.2803 |\n| TitlePageZone | 0.1960 | 0.2563 | 0.7323 | 0.3797 |\n| TitlePageZone-Index | 0.1684 | 0.1972 | 0.6818 | 0.3059 |</p>\n<h2>Citation</h2>\n<p><strong>BibTeX:</strong></p>\n<p><code>bibtex\n@misc{clrice2024ladaslargemultitaskdiachronic,\n      title={LADaS -- a Large multi-task and diachronic dataset for Layout Analysis of diverse historical documents},\n      author={Thibault Clérice},\n      year={2024},\n      eprint={2411.10068},\n      archivePrefix={arXiv},\n      primaryClass={cs.CV},\n      url={https://arxiv.org/abs/2411.10068},\n}</code></p>",
+    "access_right": "open",
+    "creators": [
+      {
+        "name": "Benjamin Kiessling",
+        "affiliation": "ALMAnaCH, Inria Paris"
+      }
+    ],
+    "keywords": [
+      "document-layout-analysis",
+      "region-segmentation",
+      "historical-documents",
+      "D-FINE",
+      "LADaS",
+      "SegmOnto"
+    ],
+    "resource_type": {
+      "title": "Other",
+      "type": "publication",
+      "subtype": "other"
+    },
+    "license": {
+      "id": "apache2.0"
+    },
+    "communities": [
+      {
+        "id": "ocr_models"
+      }
+    ],
+    "relations": {
+      "version": [
+        {
+          "index": 0,
+          "is_last": true,
+          "parent": {
+            "pid_type": "recid",
+            "pid_value": "18715363"
+          }
+        }
+      ]
+    }
+  },
+  "title": "D-FINE Large region segmentation model trained on LADaS",
+  "links": {
+    "self": "https://zenodo.org/api/records/18715364",
+    "self_html": "https://zenodo.org/records/18715364",
+    "preview_html": "https://zenodo.org/records/18715364?preview=1",
+    "doi": "https://doi.org/10.5281/zenodo.18715364",
+    "self_doi": "https://doi.org/10.5281/zenodo.18715364",
+    "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.18715364",
+    "reserve_doi": "https://zenodo.org/api/records/18715364/draft/pids/doi",
+    "parent": "https://zenodo.org/api/records/18715363",
+    "parent_html": "https://zenodo.org/records/18715363",
+    "parent_doi": "https://doi.org/10.5281/zenodo.18715363",
+    "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.18715363",
+    "self_iiif_manifest": "https://zenodo.org/api/iiif/record:18715364/manifest",
+    "self_iiif_sequence": "https://zenodo.org/api/iiif/record:18715364/sequence/default",
+    "files": "https://zenodo.org/api/records/18715364/files",
+    "media_files": "https://zenodo.org/api/records/18715364/media-files",
+    "archive": "https://zenodo.org/api/records/18715364/files-archive",
+    "archive_media": "https://zenodo.org/api/records/18715364/media-files-archive",
+    "latest": "https://zenodo.org/api/records/18715364/versions/latest",
+    "latest_html": "https://zenodo.org/records/18715364/latest",
+    "versions": "https://zenodo.org/api/records/18715364/versions",
+    "draft": "https://zenodo.org/api/records/18715364/draft",
+    "access_links": "https://zenodo.org/api/records/18715364/access/links",
+    "access_grants": "https://zenodo.org/api/records/18715364/access/grants",
+    "access_users": "https://zenodo.org/api/records/18715364/access/users",
+    "access_request": "https://zenodo.org/api/records/18715364/access/request",
+    "access": "https://zenodo.org/api/records/18715364/access",
+    "communities": "https://zenodo.org/api/records/18715364/communities",
+    "communities-suggestions": "https://zenodo.org/api/records/18715364/communities-suggestions",
+    "request_deletion": "https://zenodo.org/api/records/18715364/request-deletion",
+    "file_modification": "https://zenodo.org/api/records/18715364/file-modification",
+    "quota_increase": "https://zenodo.org/api/records/18715364/quota-increase",
+    "requests": "https://zenodo.org/api/records/18715364/requests"
+  },
+  "updated": "2026-02-20T08:56:29.342269-08:00",
+  "recid": "18715364",
+  "revision": 5,
+  "files": [
+    {
+      "id": "a2c8cece-892f-44e9-a44b-c34f26a26636",
+      "key": "ladas_l.safetensors",
+      "size": 125878904,
+      "checksum": "md5:06aa34eacb02fe49642f8838d49501db",
+      "links": {
+        "self": "https://zenodo.org/api/records/18715364/files/ladas_l.safetensors/content"
+      }
+    },
+    {
+      "id": "46b691c0-3e2e-4a6e-8b62-d099df137a24",
+      "key": "README.md",
+      "size": 5414,
+      "checksum": "md5:e346f4f256cff56316c244f68893454e",
+      "links": {
+        "self": "https://zenodo.org/api/records/18715364/files/README.md/content"
+      }
+    }
+  ],
+  "swh": {},
+  "owners": [
+    {
+      "id": "56498"
+    }
+  ],
+  "status": "published",
+  "stats": {
+    "downloads": 113,
+    "unique_downloads": 102,
+    "views": 250,
+    "unique_views": 233,
+    "version_downloads": 113,
+    "version_unique_downloads": 102,
+    "version_unique_views": 233,
+    "version_views": 250
+  },
+  "state": "done",
+  "submitted": true
+}

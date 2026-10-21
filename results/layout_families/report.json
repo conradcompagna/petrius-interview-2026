@@ -1,0 +1,261 @@
+{
+ "families": {
+  "GG": {
+   "name": "Gothic type, gloss surrounding a two-column text",
+   "development_books": 42
+  },
+  "RG": {
+   "name": "Roman type, gloss surrounding a two-column text",
+   "development_books": 43
+  },
+  "RU": {
+   "name": "Roman type, no surrounding gloss, single text column",
+   "development_books": 11
+  },
+  "RN": {
+   "name": "Roman type, two columns with notes at the foot, no surrounding gloss",
+   "development_books": 2
+  },
+  "MX": {
+   "name": "Roman text with Gothic gloss, small format",
+   "development_books": 1
+  },
+  "GU": {
+   "name": "Gothic type, two columns, no gloss",
+   "development_books": 1
+  }
+ },
+ "evaluation": {
+  "page_level_all_development_books": {
+   "pages": 1000,
+   "correct": 938,
+   "accuracy": 0.938
+  },
+  "page_level_families_with_5_or_more_books": {
+   "pages": 960,
+   "correct": 938,
+   "accuracy": 0.9771
+  },
+  "page_level_same_confidence_at_least_0.8": {
+   "pages": 918,
+   "correct": 911,
+   "accuracy": 0.9924,
+   "coverage": 0.9563
+  },
+  "book_level_vote_all": {
+   "books": 100,
+   "correct": 96
+  },
+  "book_level_vote_families_with_5_or_more_books": {
+   "books": 96,
+   "correct": 96
+  },
+  "book_errors": [
+   {
+    "book": "bsb10182238",
+    "family": "RN",
+    "predicted": "RG"
+   },
+   {
+    "book": "bsb10182295",
+    "family": "MX",
+    "predicted": "RG"
+   },
+   {
+    "book": "bsb10314057",
+    "family": "GU",
+    "predicted": "RU"
+   },
+   {
+    "book": "bsb11412389",
+    "family": "RN",
+    "predicted": "RG"
+   }
+  ],
+  "confusion_pages": {
+   "GG": {
+    "GG": 413,
+    "RG": 5,
+    "RU": 1,
+    "RN": 1
+   },
+   "RG": {
+    "RG": 420,
+    "GG": 3,
+    "RU": 2,
+    "RN": 4,
+    "GU": 1
+   },
+   "RU": {
+    "RU": 105,
+    "GG": 4,
+    "MX": 1
+   },
+   "RN": {
+    "RG": 20
+   },
+   "MX": {
+    "GU": 1,
+    "RG": 6,
+    "GG": 2,
+    "RU": 1
+   },
+   "GU": {
+    "RU": 7,
+    "GG": 3
+   }
+  },
+  "wrong_pages": [
+   {
+    "page": "bsb00048648_00229",
+    "family": "GG",
+    "predicted": "RG",
+    "confidence": 0.66
+   },
+   {
+    "page": "bsb00051898_00001",
+    "family": "GG",
+    "predicted": "RG",
+    "confidence": 0.78
+   },
+   {
+    "page": "bsb00051898_00008",
+    "family": "GG",
+    "predicted": "RU",
+    "confidence": 0.93
+   },
+   {
+    "page": "bsb10146573_00006",
+    "family": "RU",
+    "predicted": "GG",
+    "confidence": 0.72
+   },
+   {
+    "page": "bsb10146573_00104",
+    "family": "RU",
+    "predicted": "GG",
+    "confidence": 0.85
+   },
+   {
+    "page": "bsb10146602_00008",
+    "family": "RG",
+    "predicted": "GG",
+    "confidence": 0.71
+   },
+   {
+    "page": "bsb10146603_00459",
+    "family": "RG",
+    "predicted": "GG",
+    "confidence": 0.7
+   },
+   {
+    "page": "bsb10182300_00832",
+    "family": "RU",
+    "predicted": "GG",
+    "confidence": 1.0
+   },
+   {
+    "page": "bsb10182338_00031",
+    "family": "RU",
+    "predicted": "MX",
+    "confidence": 0.87
+   },
+   {
+    "page": "bsb10476982_00260",
+    "family": "RG",
+    "predicted": "RU",
+    "confidence": 0.81
+   },
+   {
+    "page": "bsb10494707_00891",
+    "family": "RG",
+    "predicted": "RN",
+    "confidence": 0.55
+   },
+   {
+    "page": "bsb10520013_00997",
+    "family": "RG",
+    "predicted": "GU",
+    "confidence": 0.36
+   },
+   {
+    "page": "bsb10520171_00412",
+    "family": "RG",
+    "predicted": "RN",
+    "confidence": 0.76
+   },
+   {
+    "page": "bsb10520171_00437",
+    "family": "RG",
+    "predicted": "RN",
+    "confidence": 0.92
+   },
+   {
+    "page": "bsb11201062_00001",
+    "family": "GG",
+    "predicted": "RG",
+    "confidence": 0.55
+   },
+   {
+    "page": "bsb11201062_00105",
+    "family": "GG",
+    "predicted": "RG",
+    "confidence": 0.51
+   },
+   {
+    "page": "bsb11201062_00287",
+    "family": "GG",
+    "predicted": "RG",
+    "confidence": 0.56
+   },
+   {
+    "page": "bsb11221755_00176",
+    "family": "RG",
+    "predicted": "RU",
+    "confidence": 1.0
+   },
+   {
+    "page": "bsb11276942_00004",
+    "family": "RU",
+    "predicted": "GG",
+    "confidence": 0.65
+   },
+   {
+    "page": "bsb11412754_01490",
+    "family": "GG",
+    "predicted": "RN",
+    "confidence": 0.51
+   },
+   {
+    "page": "bsb11412800_00020",
+    "family": "RG",
+    "predicted": "GG",
+    "confidence": 0.5
+   },
+   {
+    "page": "bsb11924896_00093",
+    "family": "RG",
+    "predicted": "RN",
+    "confidence": 0.57
+   }
+  ],
+  "catalogue_date_rule": {
+   "rule": "year <= 1525 -> Gothic glossed, else Roman",
+   "correct": 98,
+   "books": 100,
+   "exceptions": [
+    "bsb10314057",
+    "bsb11412754"
+   ]
+  }
+ },
+ "assignment_counts": {
+  "GG": 42,
+  "RG": 43,
+  "RU": 11,
+  "RN": 2,
+  "MX": 1,
+  "GU": 1
+ },
+ "sealed_assignment_counts": {}
+}

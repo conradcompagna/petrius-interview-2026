@@ -6,13 +6,7 @@ import re
 import sys
 from urllib.parse import urlparse
 
-EXPECTED = {
-    'finished-task1-min': 2, 'legacy-gold-review': 102, 'parser-transfer': 132,
-    'mdz-ocr-regions': 50, 'mdz-ocr-lexicon': 50, 'stock-models': 14,
-    'finished-region-data': 120, 'finished-region-eval': 20,
-    'finished-neural-data': 120, 'finished-neural-eval': 20, 'finished-interview': 2,
-    'finished-random-pipeline': 10,
-}
+EXPECTED = {'mdz-ocr-regions': 50, 'mdz-ocr-lexicon': 50, 'stock-models': 14, 'finished-region-data': 120, 'finished-region-eval': 20, 'finished-neural-data': 120, 'finished-neural-eval': 20, 'finished-interview': 2, 'finished-random-pipeline': 10}
 
 
 def validate(root):

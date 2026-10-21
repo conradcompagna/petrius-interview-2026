@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["key", "partition", "image", "regions", "lines"],
+  "properties": {
+    "key": {"type": "string"},
+    "partition": {"enum": ["training", "evaluation"]},
+    "image": {"type": "object", "required": ["sha256", "width", "height"]},
+    "regions": {"type": "array", "items": {"type": "object", "required": ["id", "polygon"]}},
+    "lines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "bbox", "text", "label"],
+        "properties": {"label": {"enum": ["text", "summarium", "inscriptio", "other", "outside"]}}
+      }
+    }
+  },
+  "label_definitions": {
+    "text": "The central legal text.",
+    "summarium": "A summary of the legal passage.",
+    "inscriptio": "The attribution or address identifying the legal act's issuer or recipient.",
+    "other": "Headings, rubrics and other central structural material.",
+    "outside": "Material outside the selected central text, including surrounding gloss."
+  }
+}

@@ -21,7 +21,7 @@ async function readJSON(url) {
   const body=bytes[0]===31&&bytes[1]===139?await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"))).text():new TextDecoder().decode(bytes);
   return JSON.parse(body);
 }
-const state = {fmt:"flags", index:null, mode:"finished", dataset:"finished-interview", key:"", ref:"auto", pageView:"single", role:null, overlays:true, active:"a", selected:null, serial:0, filtered:[]};
+const state = {fmt:"flags", index:null, mode:"finished", dataset:"finished-random-pipeline", key:"", ref:"auto", pageView:"single", role:null, overlays:true, active:"a", selected:null, serial:0, filtered:[]};
 const panes = {};
 let toastTimer;
 function toast(message) { $("toast").textContent = message; $("toast").style.display = "block"; clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").style.display = "none", 2600); }
@@ -284,7 +284,7 @@ async function init() {
     state.index=await readJSON("data/index.json");
     const hash=new URLSearchParams(location.hash.slice(1));
     state.mode="finished";
-    state.dataset=hash.get("dataset")||"finished-task1-min";state.ref=hash.get("reference")||"auto";
+    state.dataset=hash.get("dataset")||"finished-random-pipeline";state.ref=hash.get("reference")||"auto";
     state.key=hash.get("page")||"bsb10144443/00040";
     renderCollection();
     $("dataset").onchange=()=>selectOutput($("dataset").value);

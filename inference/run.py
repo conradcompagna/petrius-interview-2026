@@ -23,7 +23,7 @@ def regions(image_path,key,device):
     from PIL import Image
     from kraken.tasks import SegmentationTaskModel
     from kraken.configs import SegmentationInferenceConfig
-    task=SegmentationTaskModel.load_model(str(ROOT/'models/dfine_regions.safetensors'))
+    task=SegmentationTaskModel.load_model(str(ROOT/'models/dfine/regions.safetensors'))
     config=SegmentationInferenceConfig(accelerator=device,device=[0] if device=='cuda' else 'auto',precision='32-true',num_threads=4)
     image=Image.open(image_path).convert('RGB')
     result=task.predict(image,config)
@@ -65,7 +65,7 @@ def ocr(page,device,out):
         layout=parser.ocr.process_page(image,layout)
         parser.update_confidences(layout)
         xml=out/'pagexml'/(page['key']+'.xml');xml.parent.mkdir(parents=True,exist_ok=True)
-        layout.to_pagexml(str(xml),creator='D-FINE epoch14 + PERO + Historical Latin Document Analysis neural v3')
+        layout.to_pagexml(str(xml),creator='D-FINE epoch14 + PERO + multimodal neural v3')
         # Match the integer PAGE coordinates consumed by the trained classifier.
         import xml.etree.ElementTree as ET
         parsed=ET.parse(xml); ns={'p':parsed.getroot().tag.split('}')[0].strip('{')}
@@ -87,7 +87,7 @@ def ocr(page,device,out):
 
 def label(page,device,out):
     sys.path.insert(0,str(HERE/'neural'))
-    import predict
+    from .neural import predict
     path=out/'ocr'/(page['key']+'.json');write(path,page)
     if page['lines']:
         predict.main(str(out/'raw_labels'),[str(path)],device=device)
@@ -112,41 +112,20 @@ def overlay(page,out):
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('images',nargs='*',help='Local page images; defaults to fetching MDZ scans40 and41.')
-    ap.add_argument('--device',choices=['auto','cpu','cuda'],default='auto')
-    ap.add_argument('--out',type=Path)
-    ap.add_argument('--random-pages',type=int,help='Download and process new random pages from matching-layout books.')
-    ap.add_argument('--seed',type=int,help='Repeat a random sample using the recorded seed.')
-    ap.add_argument('--book',action='append',help='Limit random sampling to a book ID in random_books.json; repeat for several books.')
-    args=ap.parse_args()
-    if args.random_pages is not None:
-        if args.random_pages < 1:ap.error('--random-pages must be at least 1.')
-        if args.images:ap.error('Choose either local images or --random-pages.')
-    elif args.seed is not None or args.book:
-        ap.error('--seed and --book require --random-pages.')
+    ap.add_argument('images', nargs='+', help='Local page images.')
+    ap.add_argument('--device', choices=['auto', 'cpu', 'cuda'], default='auto')
+    ap.add_argument('--out', type=Path, default=ROOT/'outputs/inference')
+    args = ap.parse_args()
     import torch,cv2
     torch.set_num_threads(4);cv2.setNumThreads(2)
     device='cuda' if args.device=='auto' and torch.cuda.is_available() else 'cpu' if args.device=='auto' else args.device
     if device=='cuda' and not torch.cuda.is_available():raise RuntimeError('CUDA selected but no CUDA device is available.')
-    default_out=HERE/'outputs'
-    if args.random_pages is not None:
-        default_out=default_out/('random_'+datetime.now().strftime('%Y%m%d_%H%M%S_%f'))
-    out=(args.out or default_out).resolve();out.mkdir(parents=True,exist_ok=True)
-    manifest=json.loads((ROOT/'models/manifest.json').read_text())
+    out=args.out.resolve();out.mkdir(parents=True,exist_ok=True)
+    manifest=json.loads((ROOT/'models/manifest.json').read_text(encoding='utf-8'))
     for r in manifest['files']:
         if sha(ROOT/r['path'])!=r['sha256']:raise RuntimeError('Model file hash mismatch: '+r['path'])
-    sources=[]
-    if args.random_pages is not None:
-        from random_pages import prepare_pages
-        sources=prepare_pages(out,args.random_pages,args.seed,args.book)
-    elif args.images:
-        sources=[(Path(p).resolve(),'custom/'+Path(p).stem) for p in args.images]
-        if len({k for _,k in sources})!=len(sources):raise ValueError('Use distinct image filenames.')
-    else:
-        for scan in (40,41):
-            p=out/'images'/f'bsb10144443_{scan:05d}.jpg';p.parent.mkdir(parents=True,exist_ok=True)
-            if not p.exists():urllib.request.urlretrieve(f'https://api.digitale-sammlungen.de/iiif/image/v2/bsb10144443_{scan:05d}/full/full/0/default.jpg',p)
-            sources.append((p,'bsb10144443/%05d'%scan))
+    sources=[(Path(p).resolve(),'custom/'+Path(p).stem) for p in args.images]
+    if len({k for _,k in sources})!=len(sources):raise ValueError('Use distinct image filenames.')
     report=[]
     for p,key in sources:
         start=time.perf_counter();print(f'{key}: D-FINE regions ({device})',flush=True)

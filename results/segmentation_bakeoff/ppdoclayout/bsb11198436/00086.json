@@ -1,0 +1,1808 @@
+{
+  "book": "bsb11198436",
+  "scan": 86,
+  "partition": "test",
+  "training_forbidden": true,
+  "human_gold": false,
+  "semantic_labels_assigned": false,
+  "signature": {
+    "system": "ppdoclayout",
+    "manifest_sha256": "3ca8e6035f47f8d18bf77ac418f98cf3c04de46d7ce0a5f349686d25bab2a4f1",
+    "torch": "2.12.0.dev20260217+cu128",
+    "gpu": "NVIDIA GeForce RTX 5050 Laptop GPU",
+    "device": "cuda:0",
+    "batch_size": 1,
+    "custom_layout_rules": false,
+    "fine_tuned": false,
+    "source": "https://huggingface.co/PaddlePaddle/PP-DocLayoutV3_safetensors",
+    "level": "region",
+    "transformers": "5.18.0",
+    "model": "PaddlePaddle/PP-DocLayoutV3_safetensors",
+    "revision": "e4f489dc536556fc1be02b973ba06756e0d4a2ac",
+    "weights_sha256": "5ea422c6cc5fe759a47e1357c35639b58173508e025a3131cbe4b6ac59e2b85e",
+    "processor": {
+      "do_normalize": true,
+      "do_rescale": true,
+      "do_resize": true,
+      "image_mean": [
+        0,
+        0,
+        0
+      ],
+      "image_processor_type": "PPDocLayoutV3ImageProcessor",
+      "image_std": [
+        1,
+        1,
+        1
+      ],
+      "resample": 3,
+      "rescale_factor": 0.00392156862745098,
+      "size": {
+        "height": 800,
+        "width": 800
+      }
+    },
+    "precision": "float32",
+    "source_manifest_sha256": "29383b0294cfa8f55bc3c11da87cd1ba376002f299f51814542adb848fc2bec1"
+  },
+  "image": {
+    "path": "data/images/5cd5a172270085e39fe4a2af04e31639f60849297e7be9006801ea35c2dbd202.jpg",
+    "width": 2506,
+    "height": 4003,
+    "sha256": "5cd5a172270085e39fe4a2af04e31639f60849297e7be9006801ea35c2dbd202"
+  },
+  "lines": [],
+  "regions": [
+    {
+      "id": "detection_0000",
+      "polygon": [
+        [
+          454.0,
+          175.0
+        ],
+        [
+          454.0,
+          246.0
+        ],
+        [
+          567.0,
+          246.0
+        ],
+        [
+          567.0,
+          175.0
+        ]
+      ],
+      "bbox": [
+        454.0,
+        175.0,
+        567.0,
+        246.0
+      ],
+      "label": "layout_header",
+      "detector_label": "layout_header",
+      "detection_score": 0.5723286867141724,
+      "reading_order": 0,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0001",
+      "polygon": [
+        [
+          917.0,
+          141.0
+        ],
+        [
+          917.0,
+          238.0
+        ],
+        [
+          1521.0,
+          238.0
+        ],
+        [
+          1521.0,
+          141.0
+        ]
+      ],
+      "bbox": [
+        917.0,
+        141.0,
+        1521.0,
+        238.0
+      ],
+      "label": "layout_doc_title",
+      "detector_label": "layout_doc_title",
+      "detection_score": 0.5181553363800049,
+      "reading_order": 1,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0002",
+      "polygon": [
+        [
+          1602.0,
+          134.0
+        ],
+        [
+          1602.0,
+          239.0
+        ],
+        [
+          2051.0,
+          239.0
+        ],
+        [
+          2051.0,
+          134.0
+        ]
+      ],
+      "bbox": [
+        1602.0,
+        134.0,
+        2051.0,
+        239.0
+      ],
+      "label": "layout_header",
+      "detector_label": "layout_header",
+      "detection_score": 0.7018548250198364,
+      "reading_order": 2,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0003",
+      "polygon": [
+        [
+          2293.0,
+          173.0
+        ],
+        [
+          2293.0,
+          247.0
+        ],
+        [
+          2418.0,
+          247.0
+        ],
+        [
+          2418.0,
+          173.0
+        ]
+      ],
+      "bbox": [
+        2293.0,
+        173.0,
+        2418.0,
+        247.0
+      ],
+      "label": "layout_number",
+      "detector_label": "layout_number",
+      "detection_score": 0.758590817451477,
+      "reading_order": 3,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0004",
+      "polygon": [
+        [
+          331.0,
+          427.0
+        ],
+        [
+          319.0,
+          447.0
+        ],
+        [
+          319.0,
+          604.0
+        ],
+        [
+          331.0,
+          840.0
+        ],
+        [
+          473.0,
+          840.0
+        ],
+        [
+          484.0,
+          781.0
+        ],
+        [
+          484.0,
+          487.0
+        ],
+        [
+          473.0,
+          427.0
+        ]
+      ],
+      "bbox": [
+        319.0,
+        427.0,
+        484.0,
+        840.0
+      ],
+      "label": "layout_aside_text",
+      "detector_label": "layout_aside_text",
+      "detection_score": 0.6944153904914856,
+      "reading_order": 4,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0005",
+      "polygon": [
+        [
+          495.0,
+          287.0
+        ],
+        [
+          495.0,
+          308.0
+        ],
+        [
+          977.0,
+          308.0
+        ],
+        [
+          977.0,
+          264.0
+        ],
+        [
+          520.0,
+          264.0
+        ]
+      ],
+      "bbox": [
+        495.0,
+        264.0,
+        977.0,
+        308.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.5404322743415833,
+      "reading_order": 5,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0006",
+      "polygon": [
+        [
+          356.0,
+          1985.0
+        ],
+        [
+          344.0,
+          2066.0
+        ],
+        [
+          344.0,
+          2126.0
+        ],
+        [
+          356.0,
+          2308.0
+        ],
+        [
+          511.0,
+          2308.0
+        ],
+        [
+          511.0,
+          1985.0
+        ]
+      ],
+      "bbox": [
+        344.0,
+        1985.0,
+        511.0,
+        2308.0
+      ],
+      "label": "layout_aside_text",
+      "detector_label": "layout_aside_text",
+      "detection_score": 0.5749853253364563,
+      "reading_order": 6,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0007",
+      "polygon": [
+        [
+          349.0,
+          2667.0
+        ],
+        [
+          349.0,
+          2799.0
+        ],
+        [
+          506.0,
+          2799.0
+        ],
+        [
+          506.0,
+          2667.0
+        ]
+      ],
+      "bbox": [
+        349.0,
+        2667.0,
+        506.0,
+        2799.0
+      ],
+      "label": "layout_aside_text",
+      "detector_label": "layout_aside_text",
+      "detection_score": 0.6892284750938416,
+      "reading_order": 7,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0008",
+      "polygon": [
+        [
+          487.0,
+          325.0
+        ],
+        [
+          487.0,
+          487.0
+        ],
+        [
+          500.0,
+          507.0
+        ],
+        [
+          1427.0,
+          507.0
+        ],
+        [
+          1427.0,
+          325.0
+        ],
+        [
+          1415.0,
+          304.0
+        ],
+        [
+          638.0,
+          304.0
+        ]
+      ],
+      "bbox": [
+        487.0,
+        304.0,
+        1427.0,
+        507.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.8233101963996887,
+      "reading_order": 8,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0009",
+      "polygon": [
+        [
+          494.0,
+          511.0
+        ],
+        [
+          494.0,
+          558.0
+        ],
+        [
+          494.0,
+          582.0
+        ],
+        [
+          494.0,
+          605.0
+        ],
+        [
+          507.0,
+          628.0
+        ],
+        [
+          839.0,
+          628.0
+        ],
+        [
+          839.0,
+          511.0
+        ]
+      ],
+      "bbox": [
+        494.0,
+        511.0,
+        839.0,
+        628.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.7928918600082397,
+      "reading_order": 9,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0010",
+      "polygon": [
+        [
+          494.0,
+          648.0
+        ],
+        [
+          494.0,
+          727.0
+        ],
+        [
+          507.0,
+          746.0
+        ],
+        [
+          832.0,
+          746.0
+        ],
+        [
+          832.0,
+          648.0
+        ],
+        [
+          820.0,
+          628.0
+        ],
+        [
+          507.0,
+          628.0
+        ]
+      ],
+      "bbox": [
+        494.0,
+        628.0,
+        832.0,
+        746.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.8006207346916199,
+      "reading_order": 10,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0011",
+      "polygon": [
+        [
+          495.0,
+          828.0
+        ],
+        [
+          495.0,
+          1108.0
+        ],
+        [
+          838.0,
+          1108.0
+        ],
+        [
+          838.0,
+          828.0
+        ],
+        [
+          814.0,
+          828.0
+        ],
+        [
+          800.0,
+          828.0
+        ],
+        [
+          789.0,
+          828.0
+        ],
+        [
+          775.0,
+          828.0
+        ],
+        [
+          763.0,
+          828.0
+        ],
+        [
+          724.0,
+          828.0
+        ]
+      ],
+      "bbox": [
+        495.0,
+        828.0,
+        838.0,
+        1108.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.9064257740974426,
+      "reading_order": 11,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0012",
+      "polygon": [
+        [
+          494.0,
+          798.0
+        ],
+        [
+          494.0,
+          830.0
+        ],
+        [
+          821.0,
+          830.0
+        ],
+        [
+          833.0,
+          814.0
+        ],
+        [
+          833.0,
+          748.0
+        ],
+        [
+          507.0,
+          748.0
+        ]
+      ],
+      "bbox": [
+        494.0,
+        748.0,
+        833.0,
+        830.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.7542587518692017,
+      "reading_order": 12,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0013",
+      "polygon": [
+        [
+          499.0,
+          1127.0
+        ],
+        [
+          499.0,
+          1627.0
+        ],
+        [
+          849.0,
+          1627.0
+        ],
+        [
+          849.0,
+          1307.0
+        ],
+        [
+          849.0,
+          1286.0
+        ],
+        [
+          849.0,
+          1267.0
+        ],
+        [
+          849.0,
+          1246.0
+        ],
+        [
+          849.0,
+          1227.0
+        ],
+        [
+          849.0,
+          1206.0
+        ],
+        [
+          849.0,
+          1187.0
+        ],
+        [
+          849.0,
+          1147.0
+        ],
+        [
+          837.0,
+          1106.0
+        ],
+        [
+          587.0,
+          1106.0
+        ],
+        [
+          549.0,
+          1106.0
+        ],
+        [
+          537.0,
+          1106.0
+        ]
+      ],
+      "bbox": [
+        499.0,
+        1106.0,
+        849.0,
+        1627.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.9049021005630493,
+      "reading_order": 13,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0014",
+      "polygon": [
+        [
+          860.0,
+          515.0
+        ],
+        [
+          873.0,
+          1599.0
+        ],
+        [
+          1435.0,
+          1599.0
+        ],
+        [
+          1423.0,
+          515.0
+        ]
+      ],
+      "bbox": [
+        860.0,
+        515.0,
+        1435.0,
+        1599.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.9466480612754822,
+      "reading_order": 14,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0015",
+      "polygon": [
+        [
+          506.0,
+          1643.0
+        ],
+        [
+          519.0,
+          1948.0
+        ],
+        [
+          1440.0,
+          1948.0
+        ],
+        [
+          1440.0,
+          1622.0
+        ],
+        [
+          531.0,
+          1622.0
+        ]
+      ],
+      "bbox": [
+        506.0,
+        1622.0,
+        1440.0,
+        1948.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.9135671854019165,
+      "reading_order": 15,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0016",
+      "polygon": [
+        [
+          543.0,
+          1945.0
+        ],
+        [
+          518.0,
+          1966.0
+        ],
+        [
+          518.0,
+          3489.0
+        ],
+        [
+          1444.0,
+          3489.0
+        ],
+        [
+          1432.0,
+          1945.0
+        ]
+      ],
+      "bbox": [
+        518.0,
+        1945.0,
+        1444.0,
+        3489.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.941761314868927,
+      "reading_order": 16,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0017",
+      "polygon": [
+        [
+          1446.0,
+          1024.0
+        ],
+        [
+          1446.0,
+          1070.0
+        ],
+        [
+          1463.0,
+          1070.0
+        ],
+        [
+          1472.0,
+          1055.0
+        ],
+        [
+          1472.0,
+          1024.0
+        ]
+      ],
+      "bbox": [
+        1446.0,
+        1024.0,
+        1472.0,
+        1070.0
+      ],
+      "label": "layout_aside_text",
+      "detector_label": "layout_aside_text",
+      "detection_score": 0.6430967450141907,
+      "reading_order": 17,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0018",
+      "polygon": [
+        [
+          1445.0,
+          328.0
+        ],
+        [
+          1445.0,
+          349.0
+        ],
+        [
+          2406.0,
+          349.0
+        ],
+        [
+          2406.0,
+          259.0
+        ],
+        [
+          1457.0,
+          259.0
+        ]
+      ],
+      "bbox": [
+        1445.0,
+        259.0,
+        2406.0,
+        349.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.6750023365020752,
+      "reading_order": 18,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0019",
+      "polygon": [
+        [
+          1446.0,
+          1829.0
+        ],
+        [
+          1446.0,
+          1879.0
+        ],
+        [
+          1479.0,
+          1879.0
+        ],
+        [
+          1479.0,
+          1829.0
+        ]
+      ],
+      "bbox": [
+        1446.0,
+        1829.0,
+        1479.0,
+        1879.0
+      ],
+      "label": "layout_aside_text",
+      "detector_label": "layout_aside_text",
+      "detection_score": 0.603367805480957,
+      "reading_order": 19,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0020",
+      "polygon": [
+        [
+          1473.0,
+          511.0
+        ],
+        [
+          1473.0,
+          712.0
+        ],
+        [
+          2044.0,
+          712.0
+        ],
+        [
+          2044.0,
+          511.0
+        ]
+      ],
+      "bbox": [
+        1473.0,
+        511.0,
+        2044.0,
+        712.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.8597351908683777,
+      "reading_order": 20,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0021",
+      "polygon": [
+        [
+          1474.0,
+          711.0
+        ],
+        [
+          1461.0,
+          1017.0
+        ],
+        [
+          1461.0,
+          1607.0
+        ],
+        [
+          2046.0,
+          1607.0
+        ],
+        [
+          2046.0,
+          711.0
+        ]
+      ],
+      "bbox": [
+        1461.0,
+        711.0,
+        2046.0,
+        1607.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.8982798457145691,
+      "reading_order": 21,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0022",
+      "polygon": [
+        [
+          2063.0,
+          473.0
+        ],
+        [
+          2063.0,
+          947.0
+        ],
+        [
+          2416.0,
+          947.0
+        ],
+        [
+          2416.0,
+          494.0
+        ],
+        [
+          2404.0,
+          473.0
+        ]
+      ],
+      "bbox": [
+        2063.0,
+        473.0,
+        2416.0,
+        947.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.9185926914215088,
+      "reading_order": 22,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0023",
+      "polygon": [
+        [
+          2069.0,
+          948.0
+        ],
+        [
+          2069.0,
+          1568.0
+        ],
+        [
+          2413.0,
+          1568.0
+        ],
+        [
+          2425.0,
+          1488.0
+        ],
+        [
+          2425.0,
+          1469.0
+        ],
+        [
+          2425.0,
+          1348.0
+        ],
+        [
+          2425.0,
+          1329.0
+        ],
+        [
+          2425.0,
+          1308.0
+        ],
+        [
+          2425.0,
+          1289.0
+        ],
+        [
+          2425.0,
+          1249.0
+        ],
+        [
+          2401.0,
+          969.0
+        ],
+        [
+          2364.0,
+          948.0
+        ],
+        [
+          2094.0,
+          948.0
+        ],
+        [
+          2081.0,
+          948.0
+        ]
+      ],
+      "bbox": [
+        2069.0,
+        948.0,
+        2425.0,
+        1568.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.8171428442001343,
+      "reading_order": 23,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0024",
+      "polygon": [
+        [
+          2073.0,
+          1568.0
+        ],
+        [
+          2073.0,
+          1615.0
+        ],
+        [
+          2086.0,
+          1631.0
+        ],
+        [
+          2134.0,
+          1631.0
+        ],
+        [
+          2148.0,
+          1631.0
+        ],
+        [
+          2381.0,
+          1631.0
+        ],
+        [
+          2395.0,
+          1631.0
+        ],
+        [
+          2418.0,
+          1631.0
+        ],
+        [
+          2418.0,
+          1568.0
+        ],
+        [
+          2320.0,
+          1551.0
+        ],
+        [
+          2086.0,
+          1551.0
+        ]
+      ],
+      "bbox": [
+        2073.0,
+        1551.0,
+        2418.0,
+        1631.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.5833926200866699,
+      "reading_order": 24,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0025",
+      "polygon": [
+        [
+          1481.0,
+          1623.0
+        ],
+        [
+          1481.0,
+          1706.0
+        ],
+        [
+          2415.0,
+          1706.0
+        ],
+        [
+          2415.0,
+          1623.0
+        ],
+        [
+          2404.0,
+          1623.0
+        ],
+        [
+          2353.0,
+          1623.0
+        ]
+      ],
+      "bbox": [
+        1481.0,
+        1623.0,
+        2415.0,
+        1706.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.7472735643386841,
+      "reading_order": 25,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0026",
+      "polygon": [
+        [
+          1482.0,
+          1706.0
+        ],
+        [
+          1495.0,
+          1838.0
+        ],
+        [
+          2414.0,
+          1838.0
+        ],
+        [
+          2414.0,
+          1706.0
+        ]
+      ],
+      "bbox": [
+        1482.0,
+        1706.0,
+        2414.0,
+        1838.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.6692473292350769,
+      "reading_order": 26,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0027",
+      "polygon": [
+        [
+          1491.0,
+          1866.0
+        ],
+        [
+          1491.0,
+          1987.0
+        ],
+        [
+          2414.0,
+          1987.0
+        ],
+        [
+          2414.0,
+          1866.0
+        ]
+      ],
+      "bbox": [
+        1491.0,
+        1866.0,
+        2414.0,
+        1987.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.6483947038650513,
+      "reading_order": 27,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0028",
+      "polygon": [
+        [
+          1497.0,
+          1984.0
+        ],
+        [
+          1497.0,
+          2029.0
+        ],
+        [
+          2148.0,
+          2029.0
+        ],
+        [
+          2148.0,
+          1984.0
+        ]
+      ],
+      "bbox": [
+        1497.0,
+        1984.0,
+        2148.0,
+        2029.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.508958101272583,
+      "reading_order": 28,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0029",
+      "polygon": [
+        [
+          1483.0,
+          2027.0
+        ],
+        [
+          1483.0,
+          2094.0
+        ],
+        [
+          1844.0,
+          2111.0
+        ],
+        [
+          2414.0,
+          2111.0
+        ],
+        [
+          2414.0,
+          2027.0
+        ],
+        [
+          2055.0,
+          2027.0
+        ],
+        [
+          2042.0,
+          2027.0
+        ],
+        [
+          2030.0,
+          2027.0
+        ],
+        [
+          2017.0,
+          2027.0
+        ]
+      ],
+      "bbox": [
+        1483.0,
+        2027.0,
+        2414.0,
+        2111.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.7148869633674622,
+      "reading_order": 29,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0030",
+      "polygon": [
+        [
+          1478.0,
+          2102.0
+        ],
+        [
+          1491.0,
+          2674.0
+        ],
+        [
+          1653.0,
+          2674.0
+        ],
+        [
+          1704.0,
+          2674.0
+        ],
+        [
+          1729.0,
+          2674.0
+        ],
+        [
+          1829.0,
+          2674.0
+        ],
+        [
+          1880.0,
+          2674.0
+        ],
+        [
+          1904.0,
+          2674.0
+        ],
+        [
+          1980.0,
+          2674.0
+        ],
+        [
+          2406.0,
+          2674.0
+        ],
+        [
+          2418.0,
+          2655.0
+        ],
+        [
+          2418.0,
+          2122.0
+        ],
+        [
+          2255.0,
+          2102.0
+        ]
+      ],
+      "bbox": [
+        1478.0,
+        2102.0,
+        2418.0,
+        2674.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.8315545916557312,
+      "reading_order": 30,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0031",
+      "polygon": [
+        [
+          1492.0,
+          2668.0
+        ],
+        [
+          1492.0,
+          2735.0
+        ],
+        [
+          1742.0,
+          2752.0
+        ],
+        [
+          1940.0,
+          2752.0
+        ],
+        [
+          2003.0,
+          2752.0
+        ],
+        [
+          2015.0,
+          2752.0
+        ],
+        [
+          2091.0,
+          2752.0
+        ],
+        [
+          2114.0,
+          2752.0
+        ],
+        [
+          2128.0,
+          2752.0
+        ],
+        [
+          2401.0,
+          2752.0
+        ],
+        [
+          2413.0,
+          2735.0
+        ],
+        [
+          2413.0,
+          2668.0
+        ]
+      ],
+      "bbox": [
+        1492.0,
+        2668.0,
+        2413.0,
+        2752.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.5966272354125977,
+      "reading_order": 31,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0032",
+      "polygon": [
+        [
+          1495.0,
+          2747.0
+        ],
+        [
+          1495.0,
+          2790.0
+        ],
+        [
+          2114.0,
+          2790.0
+        ],
+        [
+          2114.0,
+          2747.0
+        ]
+      ],
+      "bbox": [
+        1495.0,
+        2747.0,
+        2114.0,
+        2790.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.5493401885032654,
+      "reading_order": 32,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0033",
+      "polygon": [
+        [
+          1479.0,
+          2785.0
+        ],
+        [
+          1479.0,
+          3260.0
+        ],
+        [
+          1668.0,
+          3279.0
+        ],
+        [
+          2422.0,
+          3279.0
+        ],
+        [
+          2410.0,
+          2785.0
+        ]
+      ],
+      "bbox": [
+        1479.0,
+        2785.0,
+        2422.0,
+        3279.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.8275489211082458,
+      "reading_order": 33,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0034",
+      "polygon": [
+        [
+          1487.0,
+          3264.0
+        ],
+        [
+          1487.0,
+          3308.0
+        ],
+        [
+          1945.0,
+          3308.0
+        ],
+        [
+          1945.0,
+          3264.0
+        ]
+      ],
+      "bbox": [
+        1487.0,
+        3264.0,
+        1945.0,
+        3308.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.6054982542991638,
+      "reading_order": 34,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0035",
+      "polygon": [
+        [
+          1520.0,
+          3309.0
+        ],
+        [
+          1520.0,
+          3349.0
+        ],
+        [
+          1963.0,
+          3349.0
+        ],
+        [
+          1963.0,
+          3330.0
+        ],
+        [
+          1927.0,
+          3309.0
+        ]
+      ],
+      "bbox": [
+        1520.0,
+        3309.0,
+        1963.0,
+        3349.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.6180762052536011,
+      "reading_order": 35,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0036",
+      "polygon": [
+        [
+          1480.0,
+          3341.0
+        ],
+        [
+          1480.0,
+          3483.0
+        ],
+        [
+          2419.0,
+          3483.0
+        ],
+        [
+          2419.0,
+          3341.0
+        ]
+      ],
+      "bbox": [
+        1480.0,
+        3341.0,
+        2419.0,
+        3483.0
+      ],
+      "label": "layout_text",
+      "detector_label": "layout_text",
+      "detection_score": 0.8165253400802612,
+      "reading_order": 36,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0037",
+      "polygon": [
+        [
+          2414.0,
+          949.0
+        ],
+        [
+          2414.0,
+          1070.0
+        ],
+        [
+          2505.0,
+          1070.0
+        ],
+        [
+          2505.0,
+          949.0
+        ]
+      ],
+      "bbox": [
+        2414.0,
+        949.0,
+        2505.0,
+        1070.0
+      ],
+      "label": "layout_aside_text",
+      "detector_label": "layout_aside_text",
+      "detection_score": 0.6922329068183899,
+      "reading_order": 37,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0038",
+      "polygon": [
+        [
+          2427.0,
+          1233.0
+        ],
+        [
+          2413.0,
+          1253.0
+        ],
+        [
+          2413.0,
+          1351.0
+        ],
+        [
+          2493.0,
+          1351.0
+        ],
+        [
+          2506.0,
+          1332.0
+        ],
+        [
+          2506.0,
+          1233.0
+        ]
+      ],
+      "bbox": [
+        2413.0,
+        1233.0,
+        2506.0,
+        1351.0
+      ],
+      "label": "layout_aside_text",
+      "detector_label": "layout_aside_text",
+      "detection_score": 0.7514712810516357,
+      "reading_order": 38,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    },
+    {
+      "id": "detection_0039",
+      "polygon": [
+        [
+          2428.0,
+          2808.0
+        ],
+        [
+          2414.0,
+          2847.0
+        ],
+        [
+          2414.0,
+          3002.0
+        ],
+        [
+          2497.0,
+          3002.0
+        ],
+        [
+          2497.0,
+          2808.0
+        ]
+      ],
+      "bbox": [
+        2414.0,
+        2808.0,
+        2497.0,
+        3002.0
+      ],
+      "label": "layout_aside_text",
+      "detector_label": "layout_aside_text",
+      "detection_score": 0.6442331671714783,
+      "reading_order": 39,
+      "text": "",
+      "review_status": "unreviewed_prediction",
+      "geometry_review_status": "stock_pretrained_detector",
+      "note": "Detection only. No transcription or summarium/inscriptio/text/other task label has been assigned."
+    }
+  ],
+  "warnings": [],
+  "timing_seconds": 0.157,
+  "gpu_peak_allocated_mib": 893.0
+}

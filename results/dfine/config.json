@@ -1,0 +1,33 @@
+{
+  "mode": "full",
+  "model_variant": "large",
+  "image_size": [
+    1280,
+    1280
+  ],
+  "batch_size": 1,
+  "precision": "bf16-mixed",
+  "optimizer": "AdamW",
+  "learning_rate": 0.0001,
+  "backbone_learning_rate": 1e-05,
+  "weight_decay": 0.0001,
+  "augmentation": "none for pilot; mild brightness/contrast only for full",
+  "confidence_threshold": 0.5,
+  "save_every_steps": 25,
+  "seed": 20261005,
+  "epochs": 100,
+  "max_pilot_steps": 600,
+  "model_sha256": "1e63373bd5110145d3c996ba3a39c755b5bf32c557ef9b5232e8807399e53564",
+  "manifest_sha256": "37e9bbb684d66be08110bec1396eeb536b48029e980e41b6f7b5af849169e108",
+  "code_sha256": "7751bdc7abca73b5c603ebd629527ded29a455e2bd4cb68b4595918b48f58b6a",
+  "dfine": "0.4.3",
+  "class_mapping": {
+    "lines": {},
+    "regions": {
+      "text": 0
+    }
+  },
+  "training_pages": 100,
+  "evaluation_pages": 20,
+  "gpu": "NVIDIA GeForce RTX 5050 Laptop GPU"
+}

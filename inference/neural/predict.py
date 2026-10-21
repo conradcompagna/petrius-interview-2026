@@ -5,14 +5,14 @@ The main inference/run.py pipeline prepares these inputs from local page images.
 """
 import sys, os, json, numpy as np, torch
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from train import HERE, ROLE, Lines, Regions
-from extract import page_arrays
+from .runtime import HERE, ROLE, Lines, Regions
+from .extract import page_arrays
 
 
 def main(out, files, model="full", device="auto"):
-    import train
-    train.DEV = torch.device("cuda" if device == "auto" and torch.cuda.is_available() else "cpu" if device == "auto" else device)
-    ck = torch.load(os.path.join(HERE, "..", "..", "models", "neural_v3.pt"), map_location="cpu"); voc = ck["vocab"]
+    from . import runtime
+    runtime.DEV = torch.device("cuda" if device == "auto" and torch.cuda.is_available() else "cpu" if device == "auto" else device)
+    ck = torch.load(os.path.join(HERE, "..", "..", "models", "neural", "v3.pt"), map_location="cpu"); voc = ck["vocab"]
     pages = [json.load(open(f, encoding="utf-8")) for f in files]; LL, RR = None, None
     for p in pages:
         L, R, _ = page_arrays(p, labels=False)
